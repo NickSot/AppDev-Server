@@ -5,7 +5,7 @@
   },
   
   "scripts": {
-    "test": "tsc ./test/tests.ts & node dist/tests.js",
+    "test": "tsc ./test/tests.ts & node dist/test/tests.js",
     "start": "tsc index.ts & node dist/index.js",
     "dev": "start /b tsc -w & nodemon -q -w dist/index.js"
   },
