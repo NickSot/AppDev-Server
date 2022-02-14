@@ -5,6 +5,7 @@
 - `npm run dev` - this command runs the project in development environment, meaning the following:
     - when you change the code, it is compiled automatically, so you don't have to rerun the command
     - you just have to refresh the page in order to view the result of the code changes
+- `npm run test` - this command runs all the tests written
     
 ## Files and their purposes
 - index.ts - this is where all server code is combined and transpiled
