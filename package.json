@@ -5,8 +5,9 @@
   },
   
   "scripts": {
-    "start": "node dist/index.js",
-    "dev": "start /b tsc -w & nodemon -q -w dist dist/index.js"
+    "test": "tsc ./test/tests.ts & node dist/tests.js",
+    "start": "tsc index.ts & node dist/index.js",
+    "dev": "start /b tsc -w & nodemon -q -w dist/index.js"
   },
 
   "devDependencies": {
