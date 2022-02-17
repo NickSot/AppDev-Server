@@ -70,6 +70,24 @@ LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `BeforeUserDeleteTrigger` BEFORE DELETE ON `users` FOR EACH ROW Begin
+	Delete From Wardrobes Where wId In (Select wId From UsersWardrobes Where uId = Old.uId) And WardrobeType = 'Personal';
+	Delete From UsersWardrobes Where uId = Old.uId;
+End */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Table structure for table `userswardrobes`
@@ -82,11 +100,7 @@ CREATE TABLE `userswardrobes` (
   `Id` int NOT NULL AUTO_INCREMENT,
   `uId` int NOT NULL,
   `wId` int NOT NULL,
-  PRIMARY KEY (`Id`),
-  KEY `uId` (`uId`),
-  KEY `wId` (`wId`),
-  CONSTRAINT `userswardrobes_ibfk_1` FOREIGN KEY (`uId`) REFERENCES `users` (`uId`),
-  CONSTRAINT `userswardrobes_ibfk_2` FOREIGN KEY (`wId`) REFERENCES `wardrobes` (`wId`)
+  PRIMARY KEY (`Id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -123,6 +137,25 @@ LOCK TABLES `wardrobes` WRITE;
 /*!40000 ALTER TABLE `wardrobes` DISABLE KEYS */;
 /*!40000 ALTER TABLE `wardrobes` ENABLE KEYS */;
 UNLOCK TABLES;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `BeforeWardrobeDeleteTrigger` BEFORE DELETE ON `wardrobes` FOR EACH ROW Begin
+    Delete From WardrobesClothes Where wId = Old.wId;
+    Delete From WardrobesClothes Where cId In (Select cId From Clothes Where OriginalWardrobeId = Old.wId);
+    Delete From Clothes Where OriginalWardrobeId = Old.wId;
+End */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Table structure for table `wardrobesclothes`
@@ -135,11 +168,7 @@ CREATE TABLE `wardrobesclothes` (
   `Id` int NOT NULL AUTO_INCREMENT,
   `wId` int NOT NULL,
   `cId` int NOT NULL,
-  PRIMARY KEY (`Id`),
-  KEY `wId` (`wId`),
-  KEY `cId` (`cId`),
-  CONSTRAINT `wardrobesclothes_ibfk_1` FOREIGN KEY (`wId`) REFERENCES `wardrobes` (`wId`),
-  CONSTRAINT `wardrobesclothes_ibfk_2` FOREIGN KEY (`cId`) REFERENCES `clothes` (`cId`)
+  PRIMARY KEY (`Id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -151,6 +180,14 @@ LOCK TABLES `wardrobesclothes` WRITE;
 /*!40000 ALTER TABLE `wardrobesclothes` DISABLE KEYS */;
 /*!40000 ALTER TABLE `wardrobesclothes` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Dumping events for database 'ourwardrobedb'
+--
+
+--
+-- Dumping routines for database 'ourwardrobedb'
+--
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -161,4 +198,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-02-16 21:00:56
+-- Dump completed on 2022-02-17 15:33:16

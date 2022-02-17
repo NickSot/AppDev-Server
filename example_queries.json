@@ -1,88 +1,162 @@
 {
-    "register-user": {
-        "email": "bullshit.email@sth.org",
-        "nickname": "somebullshitnickname",
-        "password": "Il0vet0watchP0rn",
-        "avatar": "binary horsefuck",
-        "gender": "equal rights = equal fights"
+    "POST": {
+        "register-user": {
+            "request-params": {
+                "email": "bullshit.email@sth.org",
+                "nickname": "somebullshitnickname",
+                "password": "Il0veGirls",
+                "avatar": "base64shit",
+                "gender": "M"
+            }
+        },
+
+        "login-user": {
+            "request-params": {
+                "email/nickname": "somebullfuck",
+                "password": "Il0veGirls"
+            },
+
+            "response-body": {
+                "user-id": 1
+            }
+        },
+
+        "log-off": {},
+
+        "wardrobe-creation": {
+            "wardrobe-name": "omaigooooood, stacyyyyyy",
+            "wardrobe-type": ["personal", "shared"]
+        },
+        
+        "create-clothe" : {
+            "wardrobe-id": 123,
+            "clothe-type": ["Head", "UpperBody", "LowerBody", "Feet", "Hands", "Groin", "Unknown"],
+            "Image": "base64shit"
+        },
+
+        "delete-wardrobe": {
+            "request-params": {"wardrobe-id": 123}
+        },
+
+        "delete-wardrobes": {
+            "request-params": {"wardrobes": [123, 234, 456]}
+        },
+
+        "delete-clothe": {
+            "request-params": {"clothe-id": 1}
+        },
+
+        "delete-clothes": {
+            "request-params": {"clothe-ids": [1, 2, 3]}
+        },
+
+        "add-clothe-to-wardrobe": {
+            "request-params": {
+                "wardrobe-id": 123,
+                "clothe-id": 1
+            }
+        },
+
+        "add-clothes-to-wardrobe": {
+            "request-params": {
+                "wardrobe-id": 123,
+                "clothe-ids": [1, 2, 3]
+            }
+        },
+
+        "add-clothes-to-wardrobes": {
+            "request-params": {
+                "wardrobe-id": [123, 234, 453],
+                "clothe-ids": [1, 2, 3]
+            }
+        },
+
+        "add-user-to-wardrobe": {
+            "request-params": {
+                "wardrobe-id": 123,
+                "user-id": 1
+            },
+
+            "response-body": {
+                "user-nickname": "Arnold_Schwartzegettozachoppa"
+            }
+        },
+
+        "delete-user-from-wardrobe": {
+            "request-params": {
+                "wardrobe-id": 123,
+                "user-id": 1
+            }
+        },
+
+        "edit-wardrobe": {
+            "request-params": {
+                "wardrobe-id": 123,
+                "wardrobe-name": "ilseeee, what should I weaaaar???"
+            }
+        },
+
+        "edit-clothe": {
+            "request-params": {
+                "clothe-type": ["Head", "UpperBody", "LowerBody", "Feet", "Hands", "Groin", "Unknown"],
+                "clothe-image": "base64shit"
+            }
+        },
+
+        "delete-user": {
+            "user-id": 1
+        },
+
+        "edit-user": {
+            "request-params": {
+                "email": "bullshit.email@sth.org",
+                "nickname": "somebullshitnickname",
+                "password": "Il0veGirls",
+                "avatar": "base64shit"
+            }
+        }
     },
 
-    "login-user": {
-        "email/nickname": "somebullfuck",
-        "password": "Il0vet0watchP0rn"
-    },
+    "GET": {
+        "get-user": {
+            "request-params": {
+                "user-id": 1
+            },
 
-    "log-off": {},
+            "response-body": {
+                "email": "bullshit.email@sth.org",
+                "nickname": "somebullshitnickname",
+                "password": "Il0veGirls",
+                "avatar": "base64shit",
+                "gender": "M"
+            }
+        },
 
-    "wardrobe-creation": {
-        "wardrobe-name": "omaigooooood, stacyyyyyy",
-        "wardrobe-type": ["personal", "shared"]
-    },
-    
-    "create-clothe" : {
-        "wardrobe-id": 123,
-        "clothe-type": ["Head", "UpperBody", "LowerBody", "Feet", "Hands", "Groin", "Unknown"],
-        "Image": "binary horsefuck"
-    },
+        "get-user-wardrobes": {
+            "request-params": {
+                "user-id": 1 
+            },
 
-    "delete-wardrobe": {
-        "wardrobe-id": 123
-    },
+            "response-body": {
+                "wardrobes": [
+                    {"wardrobe-id": 123, "wardrobe-nickname": "mert's dress collection"},
+                    {"wardrobe-id": 124, "wardrobe-nickname": "nick's bikini collection"},
+                    {"wardrobe-id": 124, "wardrobe-nickname": "yavuz's thigh-high collection"}
+                ]
+            }
+        },
 
-    "delete-wardrobes": {
-        "wardrobes": [123, 234, 456]
-    },
+        "get-wardrobe-clothes": {
+            "request-params": {
+                "wardrobe-id": 123
+            },
 
-    "delete-clothe": {
-        "clothe-id": 1
-    },
-
-    "delete-clothes": {
-        "clothe-ids": [1, 2, 3]
-    },
-
-    "add-clothe-to-wardrobe": {
-        "wardrobe-id": 123,
-        "clothe-id": 1
-    },
-
-    "add-clothes-to-wardrobe": {
-        "wardrobe-id": 123,
-        "clothe-ids": [1, 2, 3]
-    },
-
-    "add-clothes-to-wardrobes": {
-        "wardrobe-id": [123, 234, 453],
-        "clothe-ids": [1, 2, 3]
-    },
-
-    "add-user-to-wardrobe": {
-        "wardrobe-id": 123,
-        "user-id": 1
-    },
-
-    "delete-user-from-wardrobe": {
-        "wardrobe-id": 123,
-        "user-id": 1
-    },
-
-    "edit-wardrobe": {
-        "wardrobe-name": "ilseeee, what should I weaaaar???"
-    },
-
-    "edit-clothe": {
-        "clothe-type": ["Head", "UpperBody", "LowerBody", "Feet", "Hands", "Groin", "Unknown"],
-        "clothe-image": "binary horsefuck"
-    },
-
-    "delete-user": {
-        "user-id": 1
-    },
-
-    "edit-user": {
-        "email": "bullshit.email@sth.org",
-        "nickname": "somebullshitnickname",
-        "password": "Il0vet0watchP0rn",
-        "avatar": "binary horsefuck"
+            "response-body": {
+                "clothes": [
+                    {"clothe-id": 1, "clothe-type": "Whitechapel shirt"},
+                    {"clothe-id": 2, "clothe-type": "Northlane shirt (duh)"}
+                ]
+            }
+        }
     }
 }
