@@ -11,6 +11,12 @@
 - `tsc -w` - typed in the root project folder, this command will make sure that the transpiler of typescript is running
 and tracks the changes while we write code
     
+## DB setup
+- install MYSQL Server and MYSQL Workbench
+- run the script provided in the root folder (db.sql)
+- create a file, named `sql_credentials.json`, which should be of the form: `{"password": "youmysqlpassword"}`
+- the API should now be able to connect to the database
+
 ## Files and their purposes
 - index.ts - this is where all server code is combined and transpiled
 - test/tests.ts - this is where all test code is combined and transpiled
