@@ -1,3 +1,3 @@
 // import and run the test cases for the server
 
-console.log('tests finalized...')
+console.log('tests finalized...');
