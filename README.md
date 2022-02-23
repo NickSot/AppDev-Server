@@ -6,6 +6,10 @@
     - when you change the code, it is compiled automatically, so you don't have to rerun the command
     - you just have to refresh the page in order to view the result of the code changes
 - `npm run test` - this command runs all the tests written
+
+## Open a second cmd, and type the following commands:
+- `tsc -w` - typed in the root project folder, this command will make sure that the transpiler of typescript is running
+and tracks the changes while we write code
     
 ## Files and their purposes
 - index.ts - this is where all server code is combined and transpiled
