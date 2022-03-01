@@ -22,15 +22,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.userRouter = void 0;
-const userModel = __importStar(require("../models/User"));
+exports.clothRouter = void 0;
+const clothModel = __importStar(require("../models/Cloth"));
 const express_1 = __importDefault(require("express"));
-const userRouter = express_1.default.Router();
-exports.userRouter = userRouter;
-userRouter.post('/register', (req, res) => {
-    let newUser = req.body;
-    newUser.avatar = Buffer.from(req.body.avatar, 'base64');
-    userModel.create(newUser, (err, insertId) => {
+const clothRouter = express_1.default.Router();
+exports.clothRouter = clothRouter;
+clothRouter.post('/register', (req, res) => {
+    let newCloth = req.body;
+    clothModel.create(newCloth, (err, insertId) => {
         if (err) {
             return res.status(500).json({
                 message: err.message
@@ -38,36 +37,31 @@ userRouter.post('/register', (req, res) => {
         }
         res.status(200).json({
             message: 'Success!',
-            uId: insertId
+            cId: insertId
         });
     });
 });
-userRouter.get('/:id', (req, res) => {
-    userModel.find(+(req.params.id), (err, user) => {
-        let userAvatar = user.avatar.toString('base64');
+clothRouter.delete('/:id', (req, res) => {
+    clothModel.remove(+(req.params.id), (err, affectedRows) => {
+        if (err)
+            res.send(err.message);
+        if (affectedRows > 0) {
+            res.status(200).send('Success!');
+        }
+    });
+});
+clothRouter.get('/:id', (req, res) => {
+    clothModel.find(+(req.params.id), (err, cloth) => {
         res.status(200).send({
-            "email": user.email,
-            "nickname": user.nickname,
-            "password": user.password,
-            "avatar": userAvatar,
-            "gender": user.gender,
-            "oauthToken": user.OauthToken
+            'clothType': cloth.clothType,
+            'image': cloth.image,
+            'originalWardrobeId': cloth.originalWardrobeId
         });
     });
 });
-userRouter.delete('/:id', (req, res) => {
-    userModel.remove(+(req.params.id), (err, affectedRows) => {
-        if (err)
-            res.send(err.message);
-        if (affectedRows > 0) {
-            res.status(200).send('Success!');
-        }
-    });
-});
-userRouter.put('/register/:id', (req, res) => {
+clothRouter.put('/register/:id', (req, res) => {
     let updatedUser = req.body;
-    updatedUser.avatar = Buffer.from(req.body.avatar, 'base64');
-    userModel.update(+(req.params.id), (updatedUser), (err, affectedRows) => {
+    clothModel.update(+(req.params.id), (updatedUser), (err, affectedRows) => {
         if (err)
             res.send(err.message);
         if (affectedRows > 0) {
@@ -75,4 +69,4 @@ userRouter.put('/register/:id', (req, res) => {
         }
     });
 });
-//# sourceMappingURL=UserRouter.js.map
+//# sourceMappingURL=ClothRouter.js.map

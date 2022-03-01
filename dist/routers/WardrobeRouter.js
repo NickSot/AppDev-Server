@@ -22,15 +22,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.userRouter = void 0;
-const userModel = __importStar(require("../models/User"));
+exports.wardrobeRouter = void 0;
+const wardrobeModel = __importStar(require("../models/Wardrobe"));
 const express_1 = __importDefault(require("express"));
-const userRouter = express_1.default.Router();
-exports.userRouter = userRouter;
-userRouter.post('/register', (req, res) => {
-    let newUser = req.body;
-    newUser.avatar = Buffer.from(req.body.avatar, 'base64');
-    userModel.create(newUser, (err, insertId) => {
+const wardrobeRouter = express_1.default.Router();
+exports.wardrobeRouter = wardrobeRouter;
+wardrobeRouter.post('/register', (req, res) => {
+    let newWardrobe = req.body;
+    wardrobeModel.create(newWardrobe, (err, insertId) => {
         if (err) {
             return res.status(500).json({
                 message: err.message
@@ -38,36 +37,31 @@ userRouter.post('/register', (req, res) => {
         }
         res.status(200).json({
             message: 'Success!',
-            uId: insertId
+            wId: insertId
         });
     });
 });
-userRouter.get('/:id', (req, res) => {
-    userModel.find(+(req.params.id), (err, user) => {
-        let userAvatar = user.avatar.toString('base64');
+wardrobeRouter.delete('/:id', (req, res) => {
+    wardrobeModel.remove(+(req.params.id), (err, affectedRows) => {
+        if (err)
+            res.send(err.message);
+        if (affectedRows > 0) {
+            res.status(200).send('Success!');
+        }
+    });
+});
+wardrobeRouter.get('/:id', (req, res) => {
+    wardrobeModel.find(+(req.params.id), (err, wardrobe) => {
         res.status(200).send({
-            "email": user.email,
-            "nickname": user.nickname,
-            "password": user.password,
-            "avatar": userAvatar,
-            "gender": user.gender,
-            "oauthToken": user.OauthToken
+            'nickname': wardrobe.nickname,
+            'creationTime': wardrobe.creationTime,
+            'wardrobeType': wardrobe.wardrobeType
         });
     });
 });
-userRouter.delete('/:id', (req, res) => {
-    userModel.remove(+(req.params.id), (err, affectedRows) => {
-        if (err)
-            res.send(err.message);
-        if (affectedRows > 0) {
-            res.status(200).send('Success!');
-        }
-    });
-});
-userRouter.put('/register/:id', (req, res) => {
+wardrobeRouter.put('/register/:id', (req, res) => {
     let updatedUser = req.body;
-    updatedUser.avatar = Buffer.from(req.body.avatar, 'base64');
-    userModel.update(+(req.params.id), (updatedUser), (err, affectedRows) => {
+    wardrobeModel.update(+(req.params.id), (updatedUser), (err, affectedRows) => {
         if (err)
             res.send(err.message);
         if (affectedRows > 0) {
@@ -75,4 +69,4 @@ userRouter.put('/register/:id', (req, res) => {
         }
     });
 });
-//# sourceMappingURL=UserRouter.js.map
+//# sourceMappingURL=WardrobeRouter.js.map
