@@ -15,7 +15,7 @@ export const create = (user: User, callback: Function) => {
     let queryString: string = `Insert Into Users (Email, NickName, Pass, Avatar, Gender, OauthToken) Values (
         ?, ?, ?, ?, ?, ?    )`;
 
-    sqlClient.query(queryString, [user.nickname, user.email, user.password, user.avatar, user.gender, user.OauthToken]
+    sqlClient.query(queryString, [user.email, user.nickname, user.password, user.avatar, user.gender, user.OauthToken]
         , (err, result) => {
             if (err) { callback(err) };
 
@@ -44,7 +44,7 @@ export const find = (userId: number, callback: Function) => {
         const row = (<RowDataPacket> result)[0];
 
         const user: User  = {
-            nickname: row.Nickname,
+            nickname: row.NickName,
             email: row.Email,
             gender: row.Gender,
             avatar: row.Avatar,
@@ -65,6 +65,6 @@ export const update = (userId: number, updateValues: User, callback: Function) =
     (err, result) => {
         if (err) {callback(err)};
 
-        callback(null);
+        callback(null, (<OkPacket>result).affectedRows);
     });
 }

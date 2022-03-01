@@ -5,7 +5,7 @@ const db_1 = require("../db");
 const create = (user, callback) => {
     let queryString = `Insert Into Users (Email, NickName, Pass, Avatar, Gender, OauthToken) Values (
         ?, ?, ?, ?, ?, ?    )`;
-    db_1.sqlClient.query(queryString, [user.nickname, user.email, user.password, user.avatar, user.gender, user.OauthToken], (err, result) => {
+    db_1.sqlClient.query(queryString, [user.email, user.nickname, user.password, user.avatar, user.gender, user.OauthToken], (err, result) => {
         if (err) {
             callback(err);
         }
@@ -36,7 +36,7 @@ const find = (userId, callback) => {
         ;
         const row = result[0];
         const user = {
-            nickname: row.Nickname,
+            nickname: row.NickName,
             email: row.Email,
             gender: row.Gender,
             avatar: row.Avatar,
@@ -56,7 +56,7 @@ const update = (userId, updateValues, callback) => {
             callback(err);
         }
         ;
-        callback(null);
+        callback(null, result.affectedRows);
     });
 };
 exports.update = update;
