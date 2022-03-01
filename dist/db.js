@@ -11,7 +11,6 @@ exports.sqlClient = mysql2_1.default.createConnection({
     host: 'localhost',
     user: 'root',
     password: sql_password,
-    database: 'OurWardrobeDB',
-    port: 3306
+    database: 'OurWardrobeDB'
 });
 //# sourceMappingURL=db.js.map
