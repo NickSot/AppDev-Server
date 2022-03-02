@@ -60,7 +60,7 @@ CREATE TABLE `users` (
   PRIMARY KEY (`uId`),
   UNIQUE KEY `Email` (`Email`),
   UNIQUE KEY `NickName` (`NickName`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -81,7 +81,6 @@ UNLOCK TABLES;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 /*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `BeforeUserDeleteTrigger` BEFORE DELETE ON `users` FOR EACH ROW Begin
-	Delete From Wardrobes Where wId In (Select wId From UsersWardrobes Where uId = Old.uId) And WardrobeType = 'Personal';
 	Delete From UsersWardrobes Where uId = Old.uId;
 End */;;
 DELIMITER ;
@@ -113,6 +112,23 @@ LOCK TABLES `userswardrobes` WRITE;
 /*!40000 ALTER TABLE `userswardrobes` DISABLE KEYS */;
 /*!40000 ALTER TABLE `userswardrobes` ENABLE KEYS */;
 UNLOCK TABLES;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `BeforeUsersWardrobesDeleteTrigger` BEFORE DELETE ON `userswardrobes` FOR EACH ROW Begin
+	Delete From Wardrobes Where wId = Old.wId And (Select COUNT(*) From UsersWardrobes Where wId = Old.wId) = 0;
+End */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Table structure for table `wardrobes`
@@ -148,6 +164,7 @@ UNLOCK TABLES;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 /*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `BeforeWardrobeDeleteTrigger` BEFORE DELETE ON `wardrobes` FOR EACH ROW Begin
+	Delete From WardrobeUsers Where wId = Old.wId;
     Delete From WardrobesClothes Where wId = Old.wId;
     Delete From WardrobesClothes Where cId In (Select cId From Clothes Where OriginalWardrobeId = Old.wId);
     Delete From Clothes Where OriginalWardrobeId = Old.wId;
@@ -199,4 +216,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-02-24 14:07:18
+-- Dump completed on 2022-03-02 14:55:02
