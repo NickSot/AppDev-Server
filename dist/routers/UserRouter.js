@@ -42,6 +42,19 @@ userRouter.post('/register', (req, res) => {
         });
     });
 });
+userRouter.get('/login/', (req, res) => {
+    userModel.login((req.body.nickname), (req.body.password), (err, user) => {
+        let userAvatar = user.avatar.toString('base64');
+        res.status(200).send({
+            "email": user.email,
+            "nickname": user.nickname,
+            "password": user.password,
+            "avatar": userAvatar,
+            "gender": user.gender,
+            "oauthToken": user.OauthToken
+        });
+    });
+});
 userRouter.get('/:id', (req, res) => {
     userModel.find(+(req.params.id), (err, user) => {
         let userAvatar = user.avatar.toString('base64');
@@ -68,6 +81,24 @@ userRouter.put('/register/:id', (req, res) => {
     let updatedUser = req.body;
     updatedUser.avatar = Buffer.from(req.body.avatar, 'base64');
     userModel.update(+(req.params.id), (updatedUser), (err, affectedRows) => {
+        if (err)
+            res.send(err.message);
+        if (affectedRows > 0) {
+            res.status(200).send('Success!');
+        }
+    });
+});
+userRouter.post('/register/:id', (req, res) => {
+    userModel.userToWardrobe(+(req.params.id), (req.body.wId), (err, affectedRows) => {
+        if (err)
+            res.send(err.message);
+        if (affectedRows > 0) {
+            res.status(200).send('Success!');
+        }
+    });
+});
+userRouter.delete('/register/:id', (req, res) => {
+    userModel.userDelFromWardrobe(+(req.params.id), (req.body.wId), (err, affectedRows) => {
         if (err)
             res.send(err.message);
         if (affectedRows > 0) {

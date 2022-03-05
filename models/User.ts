@@ -24,6 +24,27 @@ export const create = (user: User, callback: Function) => {
         });
 };
 
+export const login = ((nickname: string, password: string, callback: Function) => {
+    let queryString: string = 'Select * From Users Where NickName = ? And Pass = ?'
+
+    sqlClient.query(queryString, [nickname, password], (err, result) => {
+        if (err) { callback(err) };
+
+        const row = (<RowDataPacket> result)[0];
+        
+        const user: User  = {
+            nickname: row.NickName,
+            email: row.Email,
+            gender: row.Gender,
+            avatar: row.Avatar,
+            password: row.Pass,
+            OauthToken: row.OauthToken
+        };
+
+        callback(null, user);
+    })
+});
+
 export const remove = (userId: number, callback: Function) => {
     let queryString = `Delete From Users Where uId = ?`;
 
@@ -68,3 +89,23 @@ export const update = (userId: number, updateValues: User, callback: Function) =
         callback(null, (<OkPacket>result).affectedRows);
     });
 }
+
+export const userToWardrobe = ((userId: number, wardrobeId: number, callback: Function) => {
+    let queryString = 'Insert Into UsersWardrobes (uId, wId) Values (?,?    )';
+
+    sqlClient.query(queryString, [userId, wardrobeId], (err, result) => {
+        if (err) {callback(err)};
+
+        callback(null, (<OkPacket>result).affectedRows);
+    });
+});
+
+export const userDelFromWardrobe = ((userId: number, wardrobeId: number, callback: Function) => {
+    let queryString = 'Delete From UsersWardrobes Where uId = ? And wId = ?';
+
+    sqlClient.query(queryString, [userId, wardrobeId], (err, result) => {
+        if (err) {callback(err)};
+
+        callback(null, (<OkPacket>result).affectedRows);
+    });
+});

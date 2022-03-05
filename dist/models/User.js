@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.update = exports.find = exports.remove = exports.create = void 0;
+exports.userDelFromWardrobe = exports.userToWardrobe = exports.update = exports.find = exports.remove = exports.login = exports.create = void 0;
 const db_1 = require("../db");
 const create = (user, callback) => {
     let queryString = `Insert Into Users (Email, NickName, Pass, Avatar, Gender, OauthToken) Values (
@@ -15,6 +15,25 @@ const create = (user, callback) => {
     });
 };
 exports.create = create;
+exports.login = ((nickname, password, callback) => {
+    let queryString = 'Select * From Users Where NickName = ? And Pass = ?';
+    db_1.sqlClient.query(queryString, [nickname, password], (err, result) => {
+        if (err) {
+            callback(err);
+        }
+        ;
+        const row = result[0];
+        const user = {
+            nickname: row.NickName,
+            email: row.Email,
+            gender: row.Gender,
+            avatar: row.Avatar,
+            password: row.Pass,
+            OauthToken: row.OauthToken
+        };
+        callback(null, user);
+    });
+});
 const remove = (userId, callback) => {
     let queryString = `Delete From Users Where uId = ?`;
     db_1.sqlClient.query(queryString, [userId], (err, result) => {
@@ -60,4 +79,24 @@ const update = (userId, updateValues, callback) => {
     });
 };
 exports.update = update;
+exports.userToWardrobe = ((userId, wardrobeId, callback) => {
+    let queryString = 'Insert Into UsersWardrobes (uId, wId) Values (?,?    )';
+    db_1.sqlClient.query(queryString, [userId, wardrobeId], (err, result) => {
+        if (err) {
+            callback(err);
+        }
+        ;
+        callback(null, result.affectedRows);
+    });
+});
+exports.userDelFromWardrobe = ((userId, wardrobeId, callback) => {
+    let queryString = 'Delete From UsersWardrobes Where uId = ? And wId = ?';
+    db_1.sqlClient.query(queryString, [userId, wardrobeId], (err, result) => {
+        if (err) {
+            callback(err);
+        }
+        ;
+        callback(null, result.affectedRows);
+    });
+});
 //# sourceMappingURL=User.js.map

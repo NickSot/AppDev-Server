@@ -5,12 +5,14 @@ const db_1 = require("../db");
 const create = (wardrobe, callback) => {
     let queryString = `Insert Into Wardrobes (NickName, CreationTime, WardrobeType) Values (
         ?, ?, ?    )`;
+    let queryString2 = 'Insert Into UsersWardrobes (uId, wId) Values (?,?    )';
     db_1.sqlClient.query(queryString, [wardrobe.nickname, wardrobe.creationTime, wardrobe.wardrobeType], (err, result) => {
         if (err) {
             callback(err);
         }
         ;
         const insertId = result.insertId;
+        db_1.sqlClient.query(queryString2, [wardrobe.uId, insertId]);
         callback(null, insertId);
     });
 };
@@ -36,6 +38,7 @@ const find = (wardrobeId, callback) => {
         ;
         const row = result[0];
         const wardrobe = {
+            uId: -1,
             nickname: row.NickName,
             creationTime: row.CreationTime,
             wardrobeType: row.WardrobeType

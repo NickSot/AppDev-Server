@@ -24,6 +24,23 @@ userRouter.post('/register', (req: Request, res: Response) => {
     });
 });
 
+userRouter.get('/login/', (req: Request, res: Response) => {
+    userModel.login((req.body.nickname), (req.body.password), (err: Error, user: User) => {
+
+        let userAvatar = user.avatar.toString('base64');
+
+        res.status(200).send({
+            "email": user.email,
+            "nickname": user.nickname,
+            "password": user.password,
+            "avatar": userAvatar,
+            "gender": user.gender,
+            "oauthToken": user.OauthToken
+        });
+    });
+});
+
+
 userRouter.get('/:id', (req: Request, res: Response) => {
     userModel.find(+(req.params.id), (err: Error, user: User) => {
 
@@ -56,6 +73,26 @@ userRouter.put('/register/:id', (req:Request, res:Response) => {
     updatedUser.avatar = Buffer.from(req.body.avatar, 'base64');
 
     userModel.update(+(req.params.id), (updatedUser), (err: Error, affectedRows: number) => {
+        if (err) res.send(err.message);
+
+        if(affectedRows > 0){
+            res.status(200).send('Success!');
+        }
+    });
+});
+
+userRouter.post('/register/:id', (req:Request, res:Response) => {
+    userModel.userToWardrobe(+(req.params.id), (req.body.wId), (err:Error, affectedRows: number) => {
+        if (err) res.send(err.message);
+
+        if(affectedRows > 0){
+            res.status(200).send('Success!');
+        }
+    });
+});
+
+userRouter.delete('/register/:id', (req:Request, res:Response) => {
+    userModel.userDelFromWardrobe(+(req.params.id), (req.body.wId), (err:Error, affectedRows: number) => {
         if (err) res.send(err.message);
 
         if(affectedRows > 0){

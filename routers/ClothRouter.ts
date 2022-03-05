@@ -55,4 +55,24 @@ clothRouter.put('/register/:id', (req:Request, res:Response) => {
     });
 });
 
+clothRouter.post('/register/:id', (req:Request, res:Response) => {
+    clothModel.clothToWardrobe(+(req.params.id), (req.body.wId), (err:Error, affectedRows: number) => {
+        if (err) res.send(err.message);
+
+        if(affectedRows > 0){
+            res.status(200).send('Success!');
+        }
+    });
+});
+
+clothRouter.delete('/register/:id', (req:Request, res:Response) => {
+    clothModel.clothDelFromWardrobe(+(req.params.id), (req.body.wId), (err:Error, affectedRows: number) => {
+        if (err) res.send(err.message);
+
+        if(affectedRows > 0){
+            res.status(200).send('Success!');
+        }
+    });
+});
+
 export {clothRouter};
