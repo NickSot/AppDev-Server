@@ -1,5 +1,5 @@
 {
-    "POST": {
+    "POST/DELETE/PUT": {
         "register-user": {
             "request-params": {
                 "email": "bullshit.email@sth.org",
