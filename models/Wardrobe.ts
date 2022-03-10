@@ -29,11 +29,14 @@ export const create = (wardrobe: Wardrobe, callback: Function) => {
 
 export const remove = (wardrobeId: number, callback: Function) => {
     let queryString = `Delete From Wardrobes Where wId = ?`;
+    let queryString2 = `Delete From UsersWardrobes Where wId = ?`;
 
     sqlClient.query(queryString, [wardrobeId], (err, result) => {
         if (err) {callback(err)};
 
         const affectedRows = (<OkPacket> result).affectedRows;
+
+        sqlClient.query(queryString2, [wardrobeId]);
 
         callback(null, affectedRows);
     });

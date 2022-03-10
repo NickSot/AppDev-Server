@@ -19,12 +19,14 @@ const create = (wardrobe, callback) => {
 exports.create = create;
 const remove = (wardrobeId, callback) => {
     let queryString = `Delete From Wardrobes Where wId = ?`;
+    let queryString2 = `Delete From UsersWardrobes Where wId = ?`;
     db_1.sqlClient.query(queryString, [wardrobeId], (err, result) => {
         if (err) {
             callback(err);
         }
         ;
         const affectedRows = result.affectedRows;
+        db_1.sqlClient.query(queryString2, [wardrobeId]);
         callback(null, affectedRows);
     });
 };
