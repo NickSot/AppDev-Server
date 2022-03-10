@@ -53,11 +53,11 @@ Create Table UsersWardrobes (
     wId Integer NOT NULL
 );
 
--- Trigger creations 
+-- Trigger and Procedure creations
 Drop Trigger If Exists BeforeWardrobeDeleteTrigger;
 Drop Trigger If Exists BeforeUserDeleteTrigger;
-
-Set Global triggerCheck = 1;
+Drop Procedure If Exists DeleteUserWardrobeRelationship;
+Drop Procedure If Exists DeleteWardrobeUserRelationship;
 
 Delimiter $
 
@@ -69,16 +69,38 @@ Begin
     Delete From Clothes Where OriginalWardrobeId = Old.wId;
 End$
 
+Create Procedure DeleteUserWardrobeRelationship(userId Integer)
+Begin
+	Create Temporary Table If Not Exists wIds (wId Integer) Engine = Memory;
+    
+    Delete From wIds;
+    Insert Into wIds Select wId From UsersWardrobes Where uId = userId;
+    
+    Delete From UsersWardrobes Where uId = userId;
+    
+    Delete From Wardrobes Where Wardrobes.wId In (Select wId From wIds) And Wardrobes.wId Not In (Select wId From UsersWardrobes);
+End$
+
+Create Procedure DeleteWardrobeUserRelationship(userId Integer, wardrobeId Integer)
+Begin
+	If wardrobeId is null Then
+		Call DeleteUserWardrobeRelationship(userId);
+	else
+		Create Temporary Table If Not Exists wIds (wId Integer) Engine = Memory;
+		
+		Delete From wIds;
+		Insert Into wIds Select wId From UsersWardrobes Where uId = userId And wId = wardrobeId;
+		
+		Delete From UsersWardrobes Where uId = userId;
+		
+		Delete From Wardrobes Where Wardrobes.wId In (Select wId From wIds) And Wardrobes.wId Not In (Select wId From UsersWardrobes);
+	End If;
+End$
+
 Create Trigger BeforeUserDeleteTrigger Before Delete On Users
 For Each Row
 Begin
-	Delete From UsersWardrobes Where uId = Old.uId;
-End$
-
-Create Trigger BeforeUsersWardrobesDeleteTrigger Before Delete On UsersWardrobes
-For Each Row
-Begin
-	Delete From Wardrobes Where wId = Old.wId And (Select COUNT(*) From UsersWardrobes Where wId = Old.wId) = 0;
+	Call DeleteUserWardrobeRelationship(Old.uId);
 End$
 
 Delimiter ;
