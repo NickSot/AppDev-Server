@@ -25,47 +25,87 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.wardrobeRouter = void 0;
 const wardrobeModel = __importStar(require("../models/Wardrobe"));
 const express_1 = __importDefault(require("express"));
+const authModel = __importStar(require("../models/Auth"));
 const wardrobeRouter = express_1.default.Router();
 exports.wardrobeRouter = wardrobeRouter;
 wardrobeRouter.post('/register', (req, res) => {
-    let newWardrobe = req.body;
-    wardrobeModel.create(newWardrobe, (err, insertId) => {
-        if (err) {
-            return res.status(500).json({
-                message: err.message
+    authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err, uIdRes) => {
+        if (err)
+            res.send(err.message);
+        if (uIdRes != null) {
+            let newWardrobe = req.body;
+            wardrobeModel.create(newWardrobe, (err, insertId) => {
+                if (err) {
+                    return res.status(500).json({
+                        message: err.message
+                    });
+                }
+                res.status(201).json({
+                    message: 'Wardrobe created!',
+                    wId: insertId
+                });
             });
         }
-        res.status(200).json({
-            message: 'Success!',
-            wId: insertId
-        });
+        else {
+            res.status(401).send('Unauthorised access request!');
+        }
     });
 });
 wardrobeRouter.delete('/:id', (req, res) => {
-    wardrobeModel.remove(+(req.params.id), (err, affectedRows) => {
+    authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err, uIdRes) => {
         if (err)
             res.send(err.message);
-        if (affectedRows > 0) {
-            res.status(200).send('Success!');
+        if (uIdRes != null) {
+            wardrobeModel.remove(+(req.params.id), (err, affectedRows) => {
+                if (err)
+                    res.send(err.message);
+                if (affectedRows > 0) {
+                    res.status(200).send('Success!');
+                }
+            });
+        }
+        else {
+            res.status(401).send('Unauthorised access request!');
         }
     });
 });
 wardrobeRouter.get('/:id', (req, res) => {
-    wardrobeModel.find(+(req.params.id), (err, wardrobe) => {
-        res.status(200).send({
-            'nickname': wardrobe.nickname,
-            'creationTime': wardrobe.creationTime,
-            'wardrobeType': wardrobe.wardrobeType
-        });
+    authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err, uIdRes) => {
+        if (err)
+            res.send(err.message);
+        if (uIdRes != null) {
+            wardrobeModel.find(+(req.params.id), (err, wardrobe) => {
+                wardrobeModel.clothList(+(req.params.id), (err, result) => {
+                    res.status(200).send({
+                        'nickname': wardrobe.nickname,
+                        'creationTime': wardrobe.creationTime,
+                        'wardrobeType': wardrobe.wardrobeType,
+                        'clothList': result
+                    });
+                });
+            });
+        }
+        else {
+            res.status(401).send('Unauthorised access request!');
+        }
     });
 });
 wardrobeRouter.put('/register/:id', (req, res) => {
-    let updatedUser = req.body;
-    wardrobeModel.update(+(req.params.id), (updatedUser), (err, affectedRows) => {
+    authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err, uIdRes) => {
         if (err)
             res.send(err.message);
-        if (affectedRows > 0) {
-            res.status(200).send('Success!');
+        if (uIdRes != null) {
+            let updatedWardrobe = req.body;
+            wardrobeModel.update(+(req.params.id), (updatedWardrobe), (err, affectedRows) => {
+                if (err)
+                    res.send(err.message);
+                if (affectedRows > 0) {
+                    res.status(200).send('Success!');
+                }
+            });
+        }
+        else {
+            res.status(401).send('Unauthorised access request!');
         }
     });
 });

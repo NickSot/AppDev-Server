@@ -30,18 +30,24 @@ export const login = ((nickname: string, password: string, callback: Function) =
     sqlClient.query(queryString, [nickname, password], (err, result) => {
         if (err) { callback(err) };
 
-        const row = (<RowDataPacket> result)[0];
+        if((<RowDataPacket> result).length > 0){
+            const row = (<RowDataPacket> result)[0];
         
-        const user: User  = {
-            nickname: row.NickName,
-            email: row.Email,
-            gender: row.Gender,
-            avatar: row.Avatar,
-            password: row.Pass,
-            OauthToken: row.OauthToken
-        };
+            const user: User  = {
+                nickname: row.NickName,
+                email: row.Email,
+                gender: row.Gender,
+                avatar: row.Avatar,
+                password: row.Pass,
+                OauthToken: row.OauthToken
+            };
 
-        callback(null, user);
+            callback(null, user);
+        }
+        
+        else{
+            callback(null, null);
+        }  
     })
 });
 
@@ -101,11 +107,21 @@ export const userToWardrobe = ((userId: number, wardrobeId: number, callback: Fu
 });
 
 export const userDelFromWardrobe = ((userId: number, wardrobeId: number, callback: Function) => {
-    let queryString = 'Delete From UsersWardrobes Where uId = ? And wId = ?';
+    let queryString = 'Call DeleteWardrobeUserRelationship(?, ?    )';
 
     sqlClient.query(queryString, [userId, wardrobeId], (err, result) => {
         if (err) {callback(err)};
 
         callback(null, (<OkPacket>result).affectedRows);
     });
+});
+
+export const wardList = ((userId: number, callback: Function) => {
+    let queryString = 'Select wId From Users u Inner Join UsersWardrobes uw On u.uId = uw.uId Where u.uId = ?'
+
+    sqlClient.query(queryString, [userId], (err, result) => {
+        if(err) {callback(err)}
+
+        callback(null, <RowDataPacket> result)
+    })
 });

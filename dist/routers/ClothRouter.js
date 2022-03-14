@@ -25,65 +25,120 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.clothRouter = void 0;
 const clothModel = __importStar(require("../models/Cloth"));
 const express_1 = __importDefault(require("express"));
+const authModel = __importStar(require("../models/Auth"));
 const clothRouter = express_1.default.Router();
 exports.clothRouter = clothRouter;
 clothRouter.post('/register', (req, res) => {
-    let newCloth = req.body;
-    clothModel.create(newCloth, (err, insertId) => {
-        if (err) {
-            return res.status(500).json({
-                message: err.message
+    authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err, uIdRes) => {
+        if (err)
+            res.send(err.message);
+        if (uIdRes != null) {
+            let newCloth = req.body;
+            clothModel.create(newCloth, (err, insertId) => {
+                if (err) {
+                    return res.status(500).json({
+                        message: err.message
+                    });
+                }
+                res.status(201).json({
+                    message: 'Cloth created!',
+                    cId: insertId
+                });
             });
         }
-        res.status(200).json({
-            message: 'Success!',
-            cId: insertId
-        });
+        else {
+            res.status(401).send('Unauthorised access request!');
+        }
     });
 });
 clothRouter.delete('/:id', (req, res) => {
-    clothModel.remove(+(req.params.id), (err, affectedRows) => {
+    authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err, uIdRes) => {
         if (err)
             res.send(err.message);
-        if (affectedRows > 0) {
-            res.status(200).send('Success!');
+        if (uIdRes != null) {
+            clothModel.remove(+(req.params.id), (err, affectedRows) => {
+                if (err)
+                    res.send(err.message);
+                if (affectedRows > 0) {
+                    res.status(200).send('Success!');
+                }
+            });
+        }
+        else {
+            res.status(401).send('Unauthorised access request!');
         }
     });
 });
 clothRouter.get('/:id', (req, res) => {
-    clothModel.find(+(req.params.id), (err, cloth) => {
-        res.status(200).send({
-            'clothType': cloth.clothType,
-            'image': cloth.image,
-            'originalWardrobeId': cloth.originalWardrobeId
-        });
+    authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err, uIdRes) => {
+        if (err)
+            res.send(err.message);
+        if (uIdRes != null) {
+            clothModel.find(+(req.params.id), (err, cloth) => {
+                res.status(200).send({
+                    'clothType': cloth.clothType,
+                    'image': cloth.image,
+                    'originalWardrobeId': cloth.originalWardrobeId
+                });
+            });
+        }
+        else {
+            res.status(401).send('Unauthorised access request!');
+        }
     });
 });
 clothRouter.put('/register/:id', (req, res) => {
-    let updatedUser = req.body;
-    clothModel.update(+(req.params.id), (updatedUser), (err, affectedRows) => {
+    authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err, uIdRes) => {
         if (err)
             res.send(err.message);
-        if (affectedRows > 0) {
-            res.status(200).send('Success!');
+        if (uIdRes != null) {
+            let updatedCloth = req.body;
+            clothModel.update(+(req.params.id), (updatedCloth), (err, affectedRows) => {
+                if (err)
+                    res.send(err.message);
+                if (affectedRows > 0) {
+                    res.status(200).send('Success!');
+                }
+            });
+        }
+        else {
+            res.status(401).send('Unauthorised access request!');
         }
     });
 });
 clothRouter.post('/register/:id', (req, res) => {
-    clothModel.clothToWardrobe(+(req.params.id), (req.body.wId), (err, affectedRows) => {
+    authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err, uIdRes) => {
         if (err)
             res.send(err.message);
-        if (affectedRows > 0) {
-            res.status(200).send('Success!');
+        if (uIdRes != null) {
+            clothModel.clothToWardrobe(+(req.params.id), (req.body.wId), (err, affectedRows) => {
+                if (err)
+                    res.send(err.message);
+                if (affectedRows > 0) {
+                    res.status(200).send('Success!');
+                }
+            });
+        }
+        else {
+            res.status(401).send('Unauthorised access request!');
         }
     });
 });
 clothRouter.delete('/register/:id', (req, res) => {
-    clothModel.clothDelFromWardrobe(+(req.params.id), (req.body.wId), (err, affectedRows) => {
+    authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err, uIdRes) => {
         if (err)
             res.send(err.message);
-        if (affectedRows > 0) {
-            res.status(200).send('Success!');
+        if (uIdRes != null) {
+            clothModel.clothDelFromWardrobe(+(req.params.id), (req.body.wId), (err, affectedRows) => {
+                if (err)
+                    res.send(err.message);
+                if (affectedRows > 0) {
+                    res.status(200).send('Success!');
+                }
+            });
+        }
+        else {
+            res.status(401).send('Unauthorised access request!');
         }
     });
 });

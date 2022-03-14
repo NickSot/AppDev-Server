@@ -72,3 +72,13 @@ export const update = (wardrobeId: number, updateValues: Wardrobe, callback: Fun
         callback(null, (<OkPacket>result).affectedRows);
     });
 }
+
+export const clothList = ((wardrobeId: number, callback: Function) => {
+    let queryString = 'Select cId From Wardrobes w Inner Join WardrobesClothes wc On w.wId = wc.wId Where w.wId = ?'
+
+    sqlClient.query(queryString, [wardrobeId], (err, result) => {
+        if(err) {callback(err)}
+
+        callback(null, <RowDataPacket> result)
+    })
+});

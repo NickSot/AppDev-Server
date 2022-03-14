@@ -1,6 +1,7 @@
 import * as userModel from '../models/User';
 import {User} from '../models/User';
 import express, {request, Request, Response} from 'express';
+import * as authModel from '../models/Auth'
 import fs from 'fs';
 
 const userRouter = express.Router();
@@ -17,86 +18,146 @@ userRouter.post('/register', (req: Request, res: Response) => {
             });
         }
 
-        res.status(200).json({
-            message: 'Success!',
-            uId: insertId
-        });
+        res.status(201).send("User created!");
     });
 });
 
 userRouter.get('/login/', (req: Request, res: Response) => {
-    userModel.login((req.body.nickname), (req.body.password), (err: Error, user: User) => {
+    userModel.login((req.body.uNickname), (req.body.uPassword), (err: Error, user?: User) => {
 
-        let userAvatar = user.avatar.toString('base64');
+        if(user != null){
 
-        res.status(200).send({
-            "email": user.email,
-            "nickname": user.nickname,
-            "password": user.password,
-            "avatar": userAvatar,
-            "gender": user.gender,
-            "oauthToken": user.OauthToken
-        });
-    });
-});
+            let userAvatar = user.avatar.toString('base64');
 
-
-userRouter.get('/:id', (req: Request, res: Response) => {
-    userModel.find(+(req.params.id), (err: Error, user: User) => {
-
-        let userAvatar = user.avatar.toString('base64');
-
-        res.status(200).send({
-            "email": user.email,
-            "nickname": user.nickname,
-            "password": user.password,
-            "avatar": userAvatar,
-            "gender": user.gender,
-            "oauthToken": user.OauthToken
-        });
-    });
-});
-
-userRouter.delete('/:id', (req:Request, res:Response) => {
-    userModel.remove(+(req.params.id), (err: Error, affectedRows: number) => {
-        if (err) res.send(err.message);
-
-        if (affectedRows > 0) {
-            res.status(200).send('Success!');
+            res.status(200).send({
+                "email": user.email,
+                "nickname": user.nickname,
+                "password": user.password,
+                "avatar": userAvatar,
+                "gender": user.gender,
+                "oauthToken": user.OauthToken
+            });
         }
+        
+        else{
+            res.status(404).send("User not found");
+        }
+        
     });
 });
 
-userRouter.put('/register/:id', (req:Request, res:Response) => {
+
+userRouter.get('/getInfo', (req: Request, res: Response) => {
+
+    authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err: Error, uIdRes?: number) => {
+        if(err) res.send(err.message);
+
+        if(uIdRes != null){
+            userModel.find((uIdRes), (err: Error, user: User) => {
+
+                let userAvatar = user.avatar.toString('base64');
+        
+                userModel.wardList((uIdRes), (err: Error, result: Array<number>) => {
+        
+                    res.status(200).send({
+                        "email": user.email,
+                        "nickname": user.nickname,
+                        "password": user.password,
+                        "avatar": userAvatar,
+                        "gender": user.gender,
+                        "oauthToken": user.OauthToken,
+                        "wardList": result
+                    });
+                });
+            });
+        }
+        else{
+            res.status(404).send('User not found');
+        }
+
+    });
+});
+
+userRouter.delete('/delUser', (req:Request, res:Response) => {
+
+    authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err: Error, uIdRes?: number) => {
+        if(err) res.send(err.message);
+
+        if(uIdRes != null){
+            userModel.remove((uIdRes), (err: Error, affectedRows: number) => {
+                if (err) res.send(err.message);
+        
+                if (affectedRows > 0) {
+                    res.status(200).send('Success!');
+                }
+            });
+        }
+        else{
+            res.status(401).send('Unauthorised access request!');
+        }
+
+    });
+});
+
+userRouter.put('/register/update', (req:Request, res:Response) => {
     let updatedUser: User = req.body;
 
     updatedUser.avatar = Buffer.from(req.body.avatar, 'base64');
 
-    userModel.update(+(req.params.id), (updatedUser), (err: Error, affectedRows: number) => {
-        if (err) res.send(err.message);
+    authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err: Error, uIdRes?: number) => {
+        if(err) res.send(err.message);
+        
+        if(uIdRes != null){
+            userModel.update((uIdRes), (updatedUser), (err: Error, affectedRows: number) => {
+                if (err) res.send(err.message);
+        
+                if(affectedRows > 0){
+                    res.status(200).send('Success!');
+                }
+            });
+        }
+        else{
+            res.status(401).send('Unauthorised access request!');
+        }
 
-        if(affectedRows > 0){
-            res.status(200).send('Success!');
+    });
+});
+
+userRouter.post('/register/addWardrobe', (req:Request, res:Response) => {
+
+    authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err: Error, uIdRes?: number) => {
+        if(err) res.send(err.message);
+        
+        if(uIdRes != null){
+            userModel.userToWardrobe((uIdRes), (req.body.wId), (err:Error, affectedRows: number) => {
+                if (err) res.send(err.message);
+        
+                if(affectedRows > 0){
+                    res.status(200).send('Success!');
+                }
+            });
+
+        }
+        else{
+            res.status(401).send('Unauthorised access request!');
         }
     });
 });
 
-userRouter.post('/register/:id', (req:Request, res:Response) => {
-    userModel.userToWardrobe(+(req.params.id), (req.body.wId), (err:Error, affectedRows: number) => {
-        if (err) res.send(err.message);
+userRouter.delete('/register/delWardrobe', (req:Request, res:Response) => {
 
-        if(affectedRows > 0){
-            res.status(200).send('Success!');
+    authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err: Error, uIdRes?: number) => {
+        if(err) res.send(err.message);
+        
+        if(uIdRes != null){
+            userModel.userDelFromWardrobe((uIdRes), (req.body.wId), (err:Error, affectedRows: number) => {
+                if (err) res.send(err.message);
+        
+                    res.status(200).send('Success!');
+            });
         }
-    });
-});
-
-userRouter.delete('/register/:id', (req:Request, res:Response) => {
-    userModel.userDelFromWardrobe(+(req.params.id), (req.body.wId), (err:Error, affectedRows: number) => {
-        if (err) res.send(err.message);
-
-        if(affectedRows > 0){
-            res.status(200).send('Success!');
+        else{
+            res.status(401).send('Unauthorised access request!');
         }
     });
 });

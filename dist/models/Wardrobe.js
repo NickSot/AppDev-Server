@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.update = exports.find = exports.remove = exports.create = void 0;
+exports.clothList = exports.update = exports.find = exports.remove = exports.create = void 0;
 const db_1 = require("../db");
 const create = (wardrobe, callback) => {
     let queryString = `Insert Into Wardrobes (NickName, CreationTime, WardrobeType) Values (
@@ -61,4 +61,13 @@ const update = (wardrobeId, updateValues, callback) => {
     });
 };
 exports.update = update;
+exports.clothList = ((wardrobeId, callback) => {
+    let queryString = 'Select cId From Wardrobes w Inner Join WardrobesClothes wc On w.wId = wc.wId Where w.wId = ?';
+    db_1.sqlClient.query(queryString, [wardrobeId], (err, result) => {
+        if (err) {
+            callback(err);
+        }
+        callback(null, result);
+    });
+});
 //# sourceMappingURL=Wardrobe.js.map

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.userDelFromWardrobe = exports.userToWardrobe = exports.update = exports.find = exports.remove = exports.login = exports.create = void 0;
+exports.wardList = exports.userDelFromWardrobe = exports.userToWardrobe = exports.update = exports.find = exports.remove = exports.login = exports.create = void 0;
 const db_1 = require("../db");
 const create = (user, callback) => {
     let queryString = `Insert Into Users (Email, NickName, Pass, Avatar, Gender, OauthToken) Values (
@@ -22,16 +22,21 @@ exports.login = ((nickname, password, callback) => {
             callback(err);
         }
         ;
-        const row = result[0];
-        const user = {
-            nickname: row.NickName,
-            email: row.Email,
-            gender: row.Gender,
-            avatar: row.Avatar,
-            password: row.Pass,
-            OauthToken: row.OauthToken
-        };
-        callback(null, user);
+        if (result.length > 0) {
+            const row = result[0];
+            const user = {
+                nickname: row.NickName,
+                email: row.Email,
+                gender: row.Gender,
+                avatar: row.Avatar,
+                password: row.Pass,
+                OauthToken: row.OauthToken
+            };
+            callback(null, user);
+        }
+        else {
+            callback(null, null);
+        }
     });
 });
 const remove = (userId, callback) => {
@@ -90,13 +95,22 @@ exports.userToWardrobe = ((userId, wardrobeId, callback) => {
     });
 });
 exports.userDelFromWardrobe = ((userId, wardrobeId, callback) => {
-    let queryString = 'Delete From UsersWardrobes Where uId = ? And wId = ?';
+    let queryString = 'Call DeleteWardrobeUserRelationship(?, ?    )';
     db_1.sqlClient.query(queryString, [userId, wardrobeId], (err, result) => {
         if (err) {
             callback(err);
         }
         ;
         callback(null, result.affectedRows);
+    });
+});
+exports.wardList = ((userId, callback) => {
+    let queryString = 'Select wId From Users u Inner Join UsersWardrobes uw On u.uId = uw.uId Where u.uId = ?';
+    db_1.sqlClient.query(queryString, [userId], (err, result) => {
+        if (err) {
+            callback(err);
+        }
+        callback(null, result);
     });
 });
 //# sourceMappingURL=User.js.map
