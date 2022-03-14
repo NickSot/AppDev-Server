@@ -41,16 +41,21 @@ userRouter.post('/register', (req, res) => {
     });
 });
 userRouter.get('/login/', (req, res) => {
-    userModel.login((req.body.uNickname), (req.body.uPassword), (err, user) => {
-        if (user != null) {
+    userModel.login((req.body.uNickname), (req.body.uPassword), (err, user, uId) => {
+        if ((user != null) && (uId != null)) {
             let userAvatar = user.avatar.toString('base64');
-            res.status(200).send({
-                "email": user.email,
-                "nickname": user.nickname,
-                "password": user.password,
-                "avatar": userAvatar,
-                "gender": user.gender,
-                "oauthToken": user.OauthToken
+            userModel.wardList((uId), (err, result) => {
+                if (err)
+                    res.send(err.message);
+                res.status(200).send({
+                    "email": user.email,
+                    "nickname": user.nickname,
+                    "password": user.password,
+                    "avatar": userAvatar,
+                    "gender": user.gender,
+                    "oauthToken": user.OauthToken,
+                    "wardList": result
+                });
             });
         }
         else {
@@ -66,6 +71,8 @@ userRouter.get('/getInfo', (req, res) => {
             userModel.find((uIdRes), (err, user) => {
                 let userAvatar = user.avatar.toString('base64');
                 userModel.wardList((uIdRes), (err, result) => {
+                    if (err)
+                        res.send(err.message);
                     res.status(200).send({
                         "email": user.email,
                         "nickname": user.nickname,

@@ -14,6 +14,7 @@ wardrobeRouter.post('/register', (req: Request, res: Response) => {
         if(uIdRes != null){
 
             let newWardrobe: Wardrobe = req.body;
+            newWardrobe.uId = uIdRes;
 
             wardrobeModel.create(newWardrobe, (err: Error, insertId: number) => {
                 if (err) {
@@ -64,7 +65,9 @@ wardrobeRouter.get('/:id', (req: Request, res: Response) => {
 
             wardrobeModel.find(+(req.params.id), (err: Error, wardrobe: Wardrobe) => {
 
-                wardrobeModel.clothList(+(req.params.id), (err: Error, result: Array<number>) =>{
+                wardrobeModel.clothList(+(req.params.id), (err: Error, result: Array<object>) =>{
+                    
+                    if(err) res.send(err.message);
         
                     res.status(200).send({
                         'nickname': wardrobe.nickname,
@@ -89,6 +92,7 @@ wardrobeRouter.put('/register/:id', (req:Request, res:Response) => {
         if(uIdRes != null){
 
             let updatedWardrobe: Wardrobe = req.body;
+            updatedWardrobe.uId = uIdRes;
 
             wardrobeModel.update(+(req.params.id), (updatedWardrobe), (err: Error, affectedRows: number) => {
                 if (err) res.send(err.message);

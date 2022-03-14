@@ -32,7 +32,7 @@ exports.login = ((nickname, password, callback) => {
                 password: row.Pass,
                 OauthToken: row.OauthToken
             };
-            callback(null, user);
+            callback(null, user, row.uId);
         }
         else {
             callback(null, null);
@@ -105,7 +105,7 @@ exports.userDelFromWardrobe = ((userId, wardrobeId, callback) => {
     });
 });
 exports.wardList = ((userId, callback) => {
-    let queryString = 'Select wId From Users u Inner Join UsersWardrobes uw On u.uId = uw.uId Where u.uId = ?';
+    let queryString = 'Select w.wId, w.Nickname, w.CreationTime, w.WardrobeType From Users u Inner Join UsersWardrobes uw On u.uId = uw.uId Inner Join Wardrobes w On w.wId = uw.wId Where u.uId = ?';
     db_1.sqlClient.query(queryString, [userId], (err, result) => {
         if (err) {
             callback(err);

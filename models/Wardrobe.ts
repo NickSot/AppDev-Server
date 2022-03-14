@@ -74,7 +74,7 @@ export const update = (wardrobeId: number, updateValues: Wardrobe, callback: Fun
 }
 
 export const clothList = ((wardrobeId: number, callback: Function) => {
-    let queryString = 'Select cId From Wardrobes w Inner Join WardrobesClothes wc On w.wId = wc.wId Where w.wId = ?'
+    let queryString = 'Select c.cId, c.ClothType, c.Image, c.OriginalWardrobeId From Wardrobes w Inner Join WardrobesClothes wc On w.wId = wc.wId Inner Join Clothes c On c.cId = wc.cId Where w.wId = ?'
 
     sqlClient.query(queryString, [wardrobeId], (err, result) => {
         if(err) {callback(err)}

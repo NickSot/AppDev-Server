@@ -23,19 +23,25 @@ userRouter.post('/register', (req: Request, res: Response) => {
 });
 
 userRouter.get('/login/', (req: Request, res: Response) => {
-    userModel.login((req.body.uNickname), (req.body.uPassword), (err: Error, user?: User) => {
+    userModel.login((req.body.uNickname), (req.body.uPassword), (err: Error, user?: User, uId?: number) => {
 
-        if(user != null){
+        if((user != null) && (uId != null)){
 
             let userAvatar = user.avatar.toString('base64');
 
-            res.status(200).send({
-                "email": user.email,
-                "nickname": user.nickname,
-                "password": user.password,
-                "avatar": userAvatar,
-                "gender": user.gender,
-                "oauthToken": user.OauthToken
+            userModel.wardList((uId), (err: Error, result: Array<object>) => {
+
+                if(err) res.send(err.message);
+        
+                res.status(200).send({
+                    "email": user.email,
+                    "nickname": user.nickname,
+                    "password": user.password,
+                    "avatar": userAvatar,
+                    "gender": user.gender,
+                    "oauthToken": user.OauthToken,
+                    "wardList": result
+                });
             });
         }
         
@@ -57,7 +63,9 @@ userRouter.get('/getInfo', (req: Request, res: Response) => {
 
                 let userAvatar = user.avatar.toString('base64');
         
-                userModel.wardList((uIdRes), (err: Error, result: Array<number>) => {
+                userModel.wardList((uIdRes), (err: Error, result: Array<object>) => {
+
+                    if(err) res.send(err.message);
         
                     res.status(200).send({
                         "email": user.email,
