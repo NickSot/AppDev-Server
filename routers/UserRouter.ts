@@ -22,51 +22,22 @@ userRouter.post('/register', (req: Request, res: Response) => {
     });
 });
 
+
+
 userRouter.get('/login/', (req: Request, res: Response) => {
-    userModel.login((req.body.uNickname), (req.body.uPassword), (err: Error, user?: User, uId?: number) => {
 
-        if((user != null) && (uId != null)){
+    if(authModel.checkCredentials(req.body.uNickname, req.body.uPassword)){
 
-            let userAvatar = user.avatar.toString('base64');
+        userModel.login((req.body.uNickname), (req.body.uPassword), (err: Error, user?: User, uId?: number) => {
 
-            userModel.wardList((uId), (err: Error, result: Array<object>) => {
-
-                if(err) res.send(err.message);
-        
-                res.status(200).send({
-                    "email": user.email,
-                    "nickname": user.nickname,
-                    "password": user.password,
-                    "avatar": userAvatar,
-                    "gender": user.gender,
-                    "oauthToken": user.OauthToken,
-                    "wardList": result
-                });
-            });
-        }
-        
-        else{
-            res.status(404).send("User not found");
-        }
-        
-    });
-});
-
-
-userRouter.get('/getInfo', (req: Request, res: Response) => {
-
-    authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err: Error, uIdRes?: number) => {
-        if(err) res.send(err.message);
-
-        if(uIdRes != null){
-            userModel.find((uIdRes), (err: Error, user: User) => {
-
+            if((user != null) && (uId != null)){
+    
                 let userAvatar = user.avatar.toString('base64');
-        
-                userModel.wardList((uIdRes), (err: Error, result: Array<object>) => {
-
+    
+                userModel.wardList((uId), (err: Error, result: Array<object>) => {
+    
                     if(err) res.send(err.message);
-        
+            
                     res.status(200).send({
                         "email": user.email,
                         "nickname": user.nickname,
@@ -77,97 +48,166 @@ userRouter.get('/getInfo', (req: Request, res: Response) => {
                         "wardList": result
                     });
                 });
-            });
-        }
-        else{
-            res.status(404).send('User not found');
-        }
+            }
+            
+            else{
+                res.status(404).send("User not found");
+            }
+            
+        });
+    }
+    else{
+        res.status(400).send("Data provided not sufficient!");
+    }
+});
 
-    });
+
+userRouter.get('/getInfo', (req: Request, res: Response) => {
+
+    if(authModel.checkCredentials(req.body.uNickname, req.body.uPassword)){
+
+        authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err: Error, uIdRes?: number) => {
+            if(err) res.send(err.message);
+    
+            if(uIdRes != null){
+                userModel.find((uIdRes), (err: Error, user: User) => {
+    
+                    let userAvatar = user.avatar.toString('base64');
+            
+                    userModel.wardList((uIdRes), (err: Error, result: Array<object>) => {
+    
+                        if(err) res.send(err.message);
+            
+                        res.status(200).send({
+                            "email": user.email,
+                            "nickname": user.nickname,
+                            "password": user.password,
+                            "avatar": userAvatar,
+                            "gender": user.gender,
+                            "oauthToken": user.OauthToken,
+                            "wardList": result
+                        });
+                    });
+                });
+            }
+            else{
+                res.status(404).send('User not found');
+            }
+    
+        });
+    }
+    else{
+        res.status(400).send("Data provided not sufficient!");
+    }
 });
 
 userRouter.delete('/delUser', (req:Request, res:Response) => {
 
-    authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err: Error, uIdRes?: number) => {
-        if(err) res.send(err.message);
+    if(authModel.checkCredentials(req.body.uNickname, req.body.uPassword)){
 
-        if(uIdRes != null){
-            userModel.remove((uIdRes), (err: Error, affectedRows: number) => {
-                if (err) res.send(err.message);
-        
-                if (affectedRows > 0) {
-                    res.status(200).send('Success!');
-                }
-            });
-        }
-        else{
-            res.status(401).send('Unauthorised access request!');
-        }
-
-    });
+        authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err: Error, uIdRes?: number) => {
+            if(err) res.send(err.message);
+    
+            if(uIdRes != null){
+                userModel.remove((uIdRes), (err: Error, affectedRows: number) => {
+                    if (err) res.send(err.message);
+            
+                    if (affectedRows > 0) {
+                        res.status(200).send('Success!');
+                    }
+                });
+            }
+            else{
+                res.status(401).send('Unauthorised access request!');
+            }
+    
+        });
+    }
+    else{
+        res.status(400).send("Data provided not sufficient!");
+    }
 });
 
 userRouter.put('/register/update', (req:Request, res:Response) => {
-    let updatedUser: User = req.body;
 
-    updatedUser.avatar = Buffer.from(req.body.avatar, 'base64');
+    if(authModel.checkCredentials(req.body.uNickname, req.body.uPassword)){
 
-    authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err: Error, uIdRes?: number) => {
-        if(err) res.send(err.message);
-        
-        if(uIdRes != null){
-            userModel.update((uIdRes), (updatedUser), (err: Error, affectedRows: number) => {
-                if (err) res.send(err.message);
-        
-                if(affectedRows > 0){
-                    res.status(200).send('Success!');
-                }
-            });
-        }
-        else{
-            res.status(401).send('Unauthorised access request!');
-        }
+        let updatedUser: User = req.body;
 
-    });
+        updatedUser.avatar = Buffer.from(req.body.avatar, 'base64');
+    
+        authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err: Error, uIdRes?: number) => {
+            if(err) res.send(err.message);
+            
+            if(uIdRes != null){
+                userModel.update((uIdRes), (updatedUser), (err: Error, affectedRows: number) => {
+                    if (err) res.send(err.message);
+            
+                    if(affectedRows > 0){
+                        res.status(200).send('Success!');
+                    }
+                });
+            }
+            else{
+                res.status(401).send('Unauthorised access request!');
+            }
+    
+        });
+    }
+    else{
+        res.status(400).send("Data provided not sufficient!");
+    }
 });
 
 userRouter.post('/register/addWardrobe', (req:Request, res:Response) => {
 
-    authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err: Error, uIdRes?: number) => {
-        if(err) res.send(err.message);
-        
-        if(uIdRes != null){
-            userModel.userToWardrobe((uIdRes), (req.body.wId), (err:Error, affectedRows: number) => {
-                if (err) res.send(err.message);
-        
-                if(affectedRows > 0){
-                    res.status(200).send('Success!');
-                }
-            });
+    if(authModel.checkCredentials(req.body.uNickname, req.body.uPassword)){
 
-        }
-        else{
-            res.status(401).send('Unauthorised access request!');
-        }
-    });
+        authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err: Error, uIdRes?: number) => {
+            if(err) res.send(err.message);
+            
+            if(uIdRes != null){
+                userModel.userToWardrobe((uIdRes), (req.body.wId), (err:Error, affectedRows: number) => {
+                    if (err) res.send(err.message);
+            
+                    if(affectedRows > 0){
+                        res.status(200).send('Success!');
+                    }
+                });
+    
+            }
+            else{
+                res.status(401).send('Unauthorised access request!');
+            }
+        });
+    }
+    else{
+        res.status(400).send("Data provided not sufficient!");
+    }
 });
 
 userRouter.delete('/register/delWardrobe', (req:Request, res:Response) => {
 
-    authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err: Error, uIdRes?: number) => {
-        if(err) res.send(err.message);
-        
-        if(uIdRes != null){
-            userModel.userDelFromWardrobe((uIdRes), (req.body.wId), (err:Error, affectedRows: number) => {
-                if (err) res.send(err.message);
-        
-                    res.status(200).send('Success!');
-            });
-        }
-        else{
-            res.status(401).send('Unauthorised access request!');
-        }
-    });
+    if(authModel.checkCredentials(req.body.uNickname, req.body.uPassword)){
+
+        authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err: Error, uIdRes?: number) => {
+            if(err) res.send(err.message);
+            
+            if(uIdRes != null){
+                userModel.userDelFromWardrobe((uIdRes), (req.body.wId), (err:Error, affectedRows: number) => {
+                    if (err) res.send(err.message);
+            
+                        res.status(200).send('Success!');
+                });
+            }
+            else{
+                res.status(401).send('Unauthorised access request!');
+            }
+        });
+    }
+    else{
+        res.status(400).send("Data provided not sufficient!");
+    }
 });
 
 export {userRouter};

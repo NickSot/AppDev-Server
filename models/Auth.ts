@@ -2,6 +2,7 @@ import { sqlClient } from '../db';
 import { OkPacket, RowDataPacket } from "mysql2";
 
 export const verifyUser = ((nickname: string, password: string, callback: Function) => {
+
     let queryString: string = 'Select uId From Users Where NickName = ? And Pass = ?'
 
     sqlClient.query(queryString, [nickname, password], (err, result) => {
@@ -9,12 +10,66 @@ export const verifyUser = ((nickname: string, password: string, callback: Functi
 
         let uIdRes = null;
 
-        if((<RowDataPacket>result).length > 0){
+        if ((<RowDataPacket>result).length > 0){
             uIdRes = (<RowDataPacket>result)[0].uId;
             callback(null, uIdRes);
         }
-        else{
+        else {
             callback(null, null);
         }
-    })
+    });
 });
+
+export const verifyWardrobe = ((uId: number, wId: number, callback: Function) => {
+    let queryString: string = 'Select * From UsersWardrobes Where uId = ? And wId = ?'
+
+    sqlClient.query(queryString, [uId, wId], (err, result) => {
+        if (err) { callback(err) };
+
+        if((<RowDataPacket>result).length > 0){
+            callback(null, true);
+        }
+        else{
+            callback(null, false);
+        }
+    });
+});
+
+export const verifyClothOrigin = ((wId: number, cId:number, callback: Function) => {
+    let queryString: string = 'Select * From Clothes Where OriginalWardrobeId = ? And cId = ?'
+
+    sqlClient.query(queryString, [wId, cId], (err, result) => {
+        if (err) { callback(err) };
+
+        if((<RowDataPacket>result).length > 0){
+            callback(null, true);
+        }
+        else{
+            callback(null, false);
+        }
+    });
+});
+
+export const verifyCloth = ((wId: number, cId:number, callback: Function) => {
+    let queryString: string = 'Select * From WardrobesClothes Where wId = ? And cId = ?'
+
+    sqlClient.query(queryString, [wId, cId], (err, result) => {
+        if (err) { callback(err) };
+
+        if((<RowDataPacket>result).length > 0){
+            callback(null, true);
+        }
+        else{
+            callback(null, false);
+        }
+    });
+});
+
+export function checkCredentials(x: string, y: string){
+
+    if((x != null) && (y != null)){
+        return true;
+    }
+
+    return false;
+}

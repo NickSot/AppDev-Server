@@ -29,88 +29,129 @@ const authModel = __importStar(require("../models/Auth"));
 const wardrobeRouter = express_1.default.Router();
 exports.wardrobeRouter = wardrobeRouter;
 wardrobeRouter.post('/register', (req, res) => {
-    authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err, uIdRes) => {
-        if (err)
-            res.send(err.message);
-        if (uIdRes != null) {
-            let newWardrobe = req.body;
-            newWardrobe.uId = uIdRes;
-            wardrobeModel.create(newWardrobe, (err, insertId) => {
-                if (err) {
-                    return res.status(500).json({
-                        message: err.message
+    if (authModel.checkCredentials(req.body.uNickname, req.body.uPassword)) {
+        authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err, uIdRes) => {
+            if (err)
+                res.send(err.message);
+            if (uIdRes != null) {
+                let newWardrobe = req.body;
+                newWardrobe.uId = uIdRes;
+                wardrobeModel.create(newWardrobe, (err, insertId) => {
+                    if (err) {
+                        return res.status(500).json({
+                            message: err.message
+                        });
+                    }
+                    res.status(201).json({
+                        message: 'Wardrobe created!',
+                        wId: insertId
                     });
-                }
-                res.status(201).json({
-                    message: 'Wardrobe created!',
-                    wId: insertId
                 });
-            });
-        }
-        else {
-            res.status(401).send('Unauthorised access request!');
-        }
-    });
+            }
+            else {
+                res.status(401).send('Unauthorised access request!');
+            }
+        });
+    }
+    else {
+        res.status(400).send("Data provided not sufficient!");
+    }
 });
 wardrobeRouter.delete('/:id', (req, res) => {
-    authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err, uIdRes) => {
-        if (err)
-            res.send(err.message);
-        if (uIdRes != null) {
-            wardrobeModel.remove(+(req.params.id), (err, affectedRows) => {
-                if (err)
-                    res.send(err.message);
-                if (affectedRows > 0) {
-                    res.status(200).send('Success!');
-                }
-            });
-        }
-        else {
-            res.status(401).send('Unauthorised access request!');
-        }
-    });
+    if (authModel.checkCredentials(req.body.uNickname, req.body.uPassword)) {
+        authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err, uIdRes) => {
+            if (err)
+                res.send(err.message);
+            if (uIdRes != null) {
+                authModel.verifyWardrobe((uIdRes), +(req.params.id), (err, valid) => {
+                    if (valid) {
+                        wardrobeModel.remove(+(req.params.id), (err, affectedRows) => {
+                            if (err)
+                                res.send(err.message);
+                            if (affectedRows > 0) {
+                                res.status(200).send('Success!');
+                            }
+                        });
+                    }
+                    else {
+                        res.status(403).send("User is not authorised to perform this action!");
+                    }
+                });
+            }
+            else {
+                res.status(401).send('Unauthorised access request!');
+            }
+        });
+    }
+    else {
+        res.status(400).send("Data provided not sufficient!");
+    }
 });
 wardrobeRouter.get('/:id', (req, res) => {
-    authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err, uIdRes) => {
-        if (err)
-            res.send(err.message);
-        if (uIdRes != null) {
-            wardrobeModel.find(+(req.params.id), (err, wardrobe) => {
-                wardrobeModel.clothList(+(req.params.id), (err, result) => {
-                    if (err)
-                        res.send(err.message);
-                    res.status(200).send({
-                        'nickname': wardrobe.nickname,
-                        'creationTime': wardrobe.creationTime,
-                        'wardrobeType': wardrobe.wardrobeType,
-                        'clothList': result
-                    });
+    if (authModel.checkCredentials(req.body.uNickname, req.body.uPassword)) {
+        authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err, uIdRes) => {
+            if (err)
+                res.send(err.message);
+            if (uIdRes != null) {
+                authModel.verifyWardrobe((uIdRes), +(req.params.id), (err, valid) => {
+                    if (valid) {
+                        wardrobeModel.find(+(req.params.id), (err, wardrobe) => {
+                            wardrobeModel.clothList(+(req.params.id), (err, result) => {
+                                if (err)
+                                    res.send(err.message);
+                                res.status(200).send({
+                                    'nickname': wardrobe.nickname,
+                                    'creationTime': wardrobe.creationTime,
+                                    'wardrobeType': wardrobe.wardrobeType,
+                                    'clothList': result
+                                });
+                            });
+                        });
+                    }
+                    else {
+                        res.status(403).send("User is not authorised to perform this action!");
+                    }
                 });
-            });
-        }
-        else {
-            res.status(401).send('Unauthorised access request!');
-        }
-    });
+            }
+            else {
+                res.status(401).send('Unauthorised access request!');
+            }
+        });
+    }
+    else {
+        res.status(400).send("Data provided not sufficient!");
+    }
 });
 wardrobeRouter.put('/register/:id', (req, res) => {
-    authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err, uIdRes) => {
-        if (err)
-            res.send(err.message);
-        if (uIdRes != null) {
-            let updatedWardrobe = req.body;
-            updatedWardrobe.uId = uIdRes;
-            wardrobeModel.update(+(req.params.id), (updatedWardrobe), (err, affectedRows) => {
-                if (err)
-                    res.send(err.message);
-                if (affectedRows > 0) {
-                    res.status(200).send('Success!');
-                }
-            });
-        }
-        else {
-            res.status(401).send('Unauthorised access request!');
-        }
-    });
+    if (authModel.checkCredentials(req.body.uNickname, req.body.uPassword)) {
+        authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err, uIdRes) => {
+            if (err)
+                res.send(err.message);
+            if (uIdRes != null) {
+                authModel.verifyWardrobe((uIdRes), +(req.params.id), (err, valid) => {
+                    if (valid) {
+                        let updatedWardrobe = req.body;
+                        updatedWardrobe.uId = uIdRes;
+                        wardrobeModel.update(+(req.params.id), (updatedWardrobe), (err, affectedRows) => {
+                            if (err)
+                                res.send(err.message);
+                            if (affectedRows > 0) {
+                                res.status(200).send('Success!');
+                            }
+                        });
+                    }
+                    else {
+                        res.status(403).send("User is not authorised to perform this action!");
+                    }
+                });
+            }
+            else {
+                res.status(401).send('Unauthorised access request!');
+            }
+        });
+    }
+    else {
+        res.status(400).send("Data provided not sufficient!");
+    }
 });
 //# sourceMappingURL=WardrobeRouter.js.map
