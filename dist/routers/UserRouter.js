@@ -40,7 +40,7 @@ userRouter.post('/register', (req, res) => {
         res.status(201).send("User created!");
     });
 });
-userRouter.get('/login/', (req, res) => {
+userRouter.post('/login', (req, res) => {
     if (authModel.checkCredentials(req.body.uNickname, req.body.uPassword)) {
         userModel.login((req.body.uNickname), (req.body.uPassword), (err, user, uId) => {
             if ((user != null) && (uId != null)) {
@@ -68,7 +68,7 @@ userRouter.get('/login/', (req, res) => {
         res.status(400).send("Data provided not sufficient!");
     }
 });
-userRouter.get('/getInfo', (req, res) => {
+userRouter.post('/getInfo', (req, res) => {
     if (authModel.checkCredentials(req.body.uNickname, req.body.uPassword)) {
         authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err, uIdRes) => {
             if (err)

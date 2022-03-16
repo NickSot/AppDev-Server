@@ -104,7 +104,7 @@ clothRouter.delete('/:id', (req, res) => {
         res.status(400).send("Data provided not sufficient!");
     }
 });
-clothRouter.get('/:id', (req, res) => {
+clothRouter.post('/:id', (req, res) => {
     if (authModel.checkCredentials(req.body.uNickname, req.body.uPassword)) {
         authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err, uIdRes) => {
             if (err)

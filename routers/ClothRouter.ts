@@ -96,7 +96,7 @@ clothRouter.delete('/:id', (req:Request, res:Response) => {
     }
 });
 
-clothRouter.get('/:id', (req: Request, res: Response) => {
+clothRouter.post('/:id', (req: Request, res: Response) => {
 
     if(authModel.checkCredentials(req.body.uNickname, req.body.uPassword)){
 

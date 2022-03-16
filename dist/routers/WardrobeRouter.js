@@ -87,7 +87,7 @@ wardrobeRouter.delete('/:id', (req, res) => {
         res.status(400).send("Data provided not sufficient!");
     }
 });
-wardrobeRouter.get('/:id', (req, res) => {
+wardrobeRouter.post('/:id', (req, res) => {
     if (authModel.checkCredentials(req.body.uNickname, req.body.uPassword)) {
         authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err, uIdRes) => {
             if (err)

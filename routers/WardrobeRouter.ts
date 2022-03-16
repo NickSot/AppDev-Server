@@ -76,7 +76,7 @@ wardrobeRouter.delete('/:id', (req:Request, res:Response) => {
     }
 });
 
-wardrobeRouter.get('/:id', (req: Request, res: Response) => {
+wardrobeRouter.post('/:id', (req: Request, res: Response) => {
 
     if(authModel.checkCredentials(req.body.uNickname, req.body.uPassword)){
 

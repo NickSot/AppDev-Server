@@ -24,7 +24,7 @@ userRouter.post('/register', (req: Request, res: Response) => {
 
 
 
-userRouter.get('/login/', (req: Request, res: Response) => {
+userRouter.post('/login', (req: Request, res: Response) => {
 
     if(authModel.checkCredentials(req.body.uNickname, req.body.uPassword)){
 
@@ -62,7 +62,7 @@ userRouter.get('/login/', (req: Request, res: Response) => {
 });
 
 
-userRouter.get('/getInfo', (req: Request, res: Response) => {
+userRouter.post('/getInfo', (req: Request, res: Response) => {
 
     if(authModel.checkCredentials(req.body.uNickname, req.body.uPassword)){
 
