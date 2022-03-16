@@ -115,7 +115,7 @@ userRouter.delete('/delUser', (req, res) => {
                 });
             }
             else {
-                res.status(401).send('Unauthorised access request!');
+                res.status(403).send('Unauthorised access request!');
             }
         });
     }
@@ -140,7 +140,7 @@ userRouter.put('/register/update', (req, res) => {
                 });
             }
             else {
-                res.status(401).send('Unauthorised access request!');
+                res.status(403).send('Unauthorised access request!');
             }
         });
     }
@@ -154,16 +154,25 @@ userRouter.post('/register/addWardrobe', (req, res) => {
             if (err)
                 res.send(err.message);
             if (uIdRes != null) {
-                userModel.userToWardrobe((uIdRes), (req.body.wId), (err, affectedRows) => {
+                authModel.verifyWardrobe((uIdRes), (req.body.wId), (err, valid) => {
                     if (err)
                         res.send(err.message);
-                    if (affectedRows > 0) {
-                        res.status(200).send('Success!');
+                    if (!valid) {
+                        userModel.userToWardrobe((uIdRes), (req.body.wId), (err, affectedRows) => {
+                            if (err)
+                                res.send(err.message);
+                            if (affectedRows > 0) {
+                                res.status(200).send('Success!');
+                            }
+                        });
+                    }
+                    else {
+                        res.status(409).send("User is already registered to wardrobe!");
                     }
                 });
             }
             else {
-                res.status(401).send('Unauthorised access request!');
+                res.status(403).send('Unauthorised access request!');
             }
         });
     }
@@ -177,14 +186,23 @@ userRouter.delete('/register/delWardrobe', (req, res) => {
             if (err)
                 res.send(err.message);
             if (uIdRes != null) {
-                userModel.userDelFromWardrobe((uIdRes), (req.body.wId), (err, affectedRows) => {
+                authModel.verifyWardrobe((uIdRes), (req.body.wId), (err, valid) => {
                     if (err)
                         res.send(err.message);
-                    res.status(200).send('Success!');
+                    if (valid) {
+                        userModel.userDelFromWardrobe((uIdRes), (req.body.wId), (err, affectedRows) => {
+                            if (err)
+                                res.send(err.message);
+                            res.status(200).send('Success!');
+                        });
+                    }
+                    else {
+                        res.status(409).send("User is already not registered to wardrobe!");
+                    }
                 });
             }
             else {
-                res.status(401).send('Unauthorised access request!');
+                res.status(403).send('Unauthorised access request!');
             }
         });
     }

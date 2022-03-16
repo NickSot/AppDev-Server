@@ -32,7 +32,7 @@ wardrobeRouter.post('/register', (req: Request, res: Response) => {
                 });
             }
             else{
-                res.status(401).send('Unauthorised access request!');
+                res.status(403).send('Unauthorised access request!');
             }
         });
     }
@@ -62,12 +62,12 @@ wardrobeRouter.delete('/:id', (req:Request, res:Response) => {
                         });
                     }
                     else{
-                        res.status(403).send("User is not authorised to perform this action!");
+                        res.status(401).send("User is not authorised to perform this action!");
                     }
                 });
             }
             else{
-                res.status(401).send('Unauthorised access request!');
+                res.status(403).send('Unauthorised access request!');
             }
         });
     }
@@ -106,12 +106,12 @@ wardrobeRouter.get('/:id', (req: Request, res: Response) => {
     
                     }
                     else{
-                        res.status(403).send("User is not authorised to perform this action!");
+                        res.status(401).send("User is not authorised to perform this action!");
                     }
                 });
             }
             else{
-                res.status(401).send('Unauthorised access request!');
+                res.status(403).send('Unauthorised access request!');
             }
         });
     }
@@ -145,12 +145,12 @@ wardrobeRouter.put('/register/:id', (req:Request, res:Response) => {
                         });
                     }
                     else{
-                        res.status(403).send("User is not authorised to perform this action!");
+                        res.status(401).send("User is not authorised to perform this action!");
                     }
                 });
             }
             else{
-                res.status(401).send('Unauthorised access request!');
+                res.status(403).send('Unauthorised access request!');
             }
         });
     }

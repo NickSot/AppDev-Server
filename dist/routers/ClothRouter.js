@@ -50,12 +50,12 @@ clothRouter.post('/register', (req, res) => {
                         });
                     }
                     else {
-                        res.status(403).send("User is not authorised to perform this action!");
+                        res.status(401).send("User is not authorised to perform this action!");
                     }
                 });
             }
             else {
-                res.status(401).send('Unauthorised access request!');
+                res.status(403).send('Unauthorised access request!');
             }
         });
     }
@@ -86,17 +86,17 @@ clothRouter.delete('/:id', (req, res) => {
                                 });
                             }
                             else {
-                                res.status(403).send("User is not authorised to delete this cloth!");
+                                res.status(401).send("User is not authorised to delete this cloth!");
                             }
                         });
                     }
                     else {
-                        res.status(403).send("User is not authorised to perform this action!");
+                        res.status(401).send("User is not authorised to perform this action!");
                     }
                 });
             }
             else {
-                res.status(401).send('Unauthorised access request!');
+                res.status(403).send('Unauthorised access request!');
             }
         });
     }
@@ -127,17 +127,17 @@ clothRouter.get('/:id', (req, res) => {
                                 });
                             }
                             else {
-                                res.status(403).send("User is not authorised to access this cloth!");
+                                res.status(401).send("User is not authorised to access this cloth!");
                             }
                         });
                     }
                     else {
-                        res.status(403).send("User is not authorised to perform this action!");
+                        res.status(401).send("User is not authorised to perform this action!");
                     }
                 });
             }
             else {
-                res.status(401).send('Unauthorised access request!');
+                res.status(403).send('Unauthorised access request!');
             }
         });
     }
@@ -169,17 +169,17 @@ clothRouter.put('/register/:id', (req, res) => {
                                 });
                             }
                             else {
-                                res.status(403).send("User is not authorised to delete this cloth!");
+                                res.status(401).send("User is not authorised to delete this cloth!");
                             }
                         });
                     }
                     else {
-                        res.status(403).send("User is not authorised to perform this action!");
+                        res.status(401).send("User is not authorised to perform this action!");
                     }
                 });
             }
             else {
-                res.status(401).send('Unauthorised access request!');
+                res.status(403).send('Unauthorised access request!');
             }
         });
     }
@@ -197,30 +197,39 @@ clothRouter.post('/register/:id', (req, res) => {
                     if (err)
                         res.send(err.message);
                     if (wValid) {
-                        authModel.verifyClothOrigin((req.body.ogWarId), +(req.params.id), (err, cValid) => {
+                        authModel.verifyClothOrigin((req.body.ogWarId), +(req.params.id), (err, cOgValid) => {
                             if (err)
                                 res.send(err.message);
-                            if (cValid) {
-                                clothModel.clothToWardrobe(+(req.params.id), (req.body.wId), (err, affectedRows) => {
+                            if (cOgValid) {
+                                authModel.verifyCloth((req.body.wId), +(req.params.id), (err, cValid) => {
                                     if (err)
                                         res.send(err.message);
-                                    if (affectedRows > 0) {
-                                        res.status(200).send('Success!');
+                                    if (!cValid) {
+                                        clothModel.clothToWardrobe(+(req.params.id), (req.body.wId), (err, affectedRows) => {
+                                            if (err)
+                                                res.send(err.message);
+                                            if (affectedRows > 0) {
+                                                res.status(200).send('Success!');
+                                            }
+                                        });
+                                    }
+                                    else {
+                                        res.status(409).send("Cloth already has relation!");
                                     }
                                 });
                             }
                             else {
-                                res.status(403).send("User is not authorised to add this cloth!");
+                                res.status(401).send("User is not authorised to add this cloth!");
                             }
                         });
                     }
                     else {
-                        res.status(403).send("User is not authorised to perform this action!");
+                        res.status(401).send("User is not authorised to perform this action!");
                     }
                 });
             }
             else {
-                res.status(401).send('Unauthorised access request!');
+                res.status(403).send('Unauthorised access request!');
             }
         });
     }
@@ -238,30 +247,39 @@ clothRouter.delete('/register/:id', (req, res) => {
                     if (err)
                         res.send(err.message);
                     if (wValid) {
-                        authModel.verifyClothOrigin((req.body.ogWarId), +(req.params.id), (err, cValid) => {
+                        authModel.verifyClothOrigin((req.body.ogWarId), +(req.params.id), (err, cOgValid) => {
                             if (err)
                                 res.send(err.message);
-                            if (cValid) {
-                                clothModel.clothDelFromWardrobe(+(req.params.id), (req.body.wId), (err, affectedRows) => {
+                            if (cOgValid) {
+                                authModel.verifyCloth((req.body.wId), +(req.params.id), (err, cValid) => {
                                     if (err)
                                         res.send(err.message);
-                                    if (affectedRows > 0) {
-                                        res.status(200).send('Success!');
+                                    if (cValid) {
+                                        clothModel.clothDelFromWardrobe(+(req.params.id), (req.body.wId), (err, affectedRows) => {
+                                            if (err)
+                                                res.send(err.message);
+                                            if (affectedRows > 0) {
+                                                res.status(200).send('Success!');
+                                            }
+                                        });
+                                    }
+                                    else {
+                                        res.status(409).send("Cloth already does not have any relation!");
                                     }
                                 });
                             }
                             else {
-                                res.status(403).send("User is not authorised to delete this cloth!");
+                                res.status(401).send("User is not authorised to delete this cloth!");
                             }
                         });
                     }
                     else {
-                        res.status(403).send("User is not authorised to perform this action!");
+                        res.status(401).send("User is not authorised to perform this action!");
                     }
                 });
             }
             else {
-                res.status(401).send('Unauthorised access request!');
+                res.status(403).send('Unauthorised access request!');
             }
         });
     }
