@@ -26,18 +26,35 @@ exports.userRouter = void 0;
 const userModel = __importStar(require("../models/User"));
 const express_1 = __importDefault(require("express"));
 const authModel = __importStar(require("../models/Auth"));
+const email_check_1 = __importDefault(require("email-check"));
 const userRouter = express_1.default.Router();
 exports.userRouter = userRouter;
 userRouter.post('/register', (req, res) => {
     let newUser = req.body;
     newUser.avatar = Buffer.from(req.body.avatar, 'base64');
-    userModel.create(newUser, (err, insertId) => {
-        if (err) {
-            return res.status(500).json({
-                message: err.message
+    (0, email_check_1.default)(newUser.email)
+        .then(function (result) {
+        if (result) {
+            userModel.create(newUser, (err, insertId) => {
+                if (err) {
+                    return res.status(500).json({
+                        message: err.message
+                    });
+                }
+                res.status(201).send("User created!");
             });
         }
-        res.status(201).send("User created!");
+        else {
+            res.status(404).send('User email does not exists.');
+        }
+    })
+        .catch(function (err) {
+        if (err.message === 'refuse') {
+            res.status(500).send('error');
+        }
+        else {
+            res.status(500).send('anime waifu');
+        }
     });
 });
 userRouter.post('/login', (req, res) => {
@@ -49,6 +66,7 @@ userRouter.post('/login', (req, res) => {
                     if (err)
                         res.send(err.message);
                     res.status(200).send({
+                        "uId": user.id,
                         "email": user.email,
                         "nickname": user.nickname,
                         "password": user.password,

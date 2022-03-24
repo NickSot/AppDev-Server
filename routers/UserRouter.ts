@@ -3,6 +3,7 @@ import {User} from '../models/User';
 import express, {request, Request, Response} from 'express';
 import * as authModel from '../models/Auth'
 import fs from 'fs';
+import emailCheck from 'email-check';
 
 const userRouter = express.Router();
 
@@ -11,15 +12,31 @@ userRouter.post('/register', (req: Request, res: Response) => {
 
     newUser.avatar = Buffer.from(req.body.avatar, 'base64');
 
-    userModel.create(newUser, (err: Error, insertId: number) => {
-        if (err) {
-            return res.status(500).json({
-                message: err.message
-            });
-        }
+    emailCheck(newUser.email)
+            .then(function (result) {
+                if (result) {
+                    userModel.create(newUser, (err: Error, insertId: number) => {
+                        if (err) {
+                            return res.status(500).json({
+                                message: err.message
+                            });
+                        }
+                
+                        res.status(201).send("User created!");
+                    });
+                }
 
-        res.status(201).send("User created!");
-    });
+                else{
+                    res.status(404).send('User email does not exists.');
+                }
+            })
+            .catch(function (err) {
+                if (err.message === 'refuse') {
+                    res.status(500).send('error');
+                } else {
+                    res.status(500).send('anime waifu')
+                }
+            });
 });
 
 
@@ -39,6 +56,7 @@ userRouter.post('/login', (req: Request, res: Response) => {
                     if(err) res.send(err.message);
             
                     res.status(200).send({
+                        "uId": user.id,
                         "email": user.email,
                         "nickname": user.nickname,
                         "password": user.password,

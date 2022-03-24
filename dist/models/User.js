@@ -9,9 +9,10 @@ const create = (user, callback) => {
         if (err) {
             callback(err);
         }
-        ;
-        const insertId = result.insertId;
-        callback(null, insertId);
+        else {
+            const insertId = result.insertId;
+            callback(null, insertId);
+        }
     });
 };
 exports.create = create;
@@ -25,6 +26,7 @@ exports.login = ((nickname, password, callback) => {
         if (result.length > 0) {
             const row = result[0];
             const user = {
+                id: row.uId,
                 nickname: row.NickName,
                 email: row.Email,
                 gender: row.Gender,

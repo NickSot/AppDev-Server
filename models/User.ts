@@ -17,10 +17,12 @@ export const create = (user: User, callback: Function) => {
 
     sqlClient.query(queryString, [user.email, user.nickname, user.password, user.avatar, user.gender, user.OauthToken]
         , (err, result) => {
-            if (err) { callback(err) };
-
-            const insertId = (<OkPacket> result).insertId;
-            callback(null, insertId);
+            if (err) {
+                callback(err);
+            } else{
+                const insertId = (<OkPacket> result).insertId;
+                callback(null, insertId);
+            }
         });
 };
 
@@ -34,6 +36,7 @@ export const login = ((nickname: string, password: string, callback: Function) =
             const row = (<RowDataPacket> result)[0];
         
             const user: User  = {
+                id: row.uId,
                 nickname: row.NickName,
                 email: row.Email,
                 gender: row.Gender,
