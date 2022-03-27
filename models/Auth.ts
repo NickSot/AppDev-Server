@@ -65,6 +65,21 @@ export const verifyCloth = ((wId: number, cId:number, callback: Function) => {
     });
 });
 
+export const checkAdmin = ((wId: number, adminId:number, callback: Function) => {
+    let queryString: string = 'Select * From Wardrobes Where wId = ? And AdminId = ?'
+
+    sqlClient.query(queryString, [wId, adminId], (err, result) => {
+        if (err) { callback(err) };
+
+        if((<RowDataPacket>result).length > 0){
+            callback(null, true);
+        }
+        else{
+            callback(null, false);
+        }
+    });
+});
+
 export function checkCredentials(x: string, y: string){
 
     if((x != null) && (y != null)){

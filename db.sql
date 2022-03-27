@@ -23,7 +23,8 @@ Create Table Wardrobes (
 	wId Integer Primary Key auto_increment NOT NULL,
     NickName Varchar(50) NOT NULL,
     CreationTime Timestamp,
-    WardrobeType Enum('Personal', 'Shared') NOT NULL
+    WardrobeType Enum('Personal', 'Shared') NOT NULL,
+    AdminId Integer Not NULL
 );
 
 Drop Table If Exists Clothes;

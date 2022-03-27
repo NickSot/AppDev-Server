@@ -36,6 +36,7 @@ wardrobeRouter.post('/register', (req, res) => {
             if (uIdRes != null) {
                 let newWardrobe = req.body;
                 newWardrobe.uId = uIdRes;
+                newWardrobe.adminId = uIdRes;
                 wardrobeModel.create(newWardrobe, (err, insertId) => {
                     if (err) {
                         return res.status(500).json({
@@ -65,11 +66,22 @@ wardrobeRouter.delete('/:id', (req, res) => {
             if (uIdRes != null) {
                 authModel.verifyWardrobe((uIdRes), +(req.params.id), (err, valid) => {
                     if (valid) {
-                        wardrobeModel.remove(+(req.params.id), (err, affectedRows) => {
+                        authModel.checkAdmin(+(req.params.id), (uIdRes), (err, admin) => {
                             if (err)
                                 res.send(err.message);
-                            if (affectedRows > 0) {
-                                res.status(200).send('Success!');
+                            else {
+                                if (admin) {
+                                    wardrobeModel.remove(+(req.params.id), (err, affectedRows) => {
+                                        if (err)
+                                            res.send(err.message);
+                                        if (affectedRows > 0) {
+                                            res.status(200).send('Success!');
+                                        }
+                                    });
+                                }
+                                else {
+                                    res.status(401).send("User is not authorised to perform this action!");
+                                }
                             }
                         });
                     }
@@ -103,6 +115,7 @@ wardrobeRouter.post('/:id', (req, res) => {
                                     'nickname': wardrobe.nickname,
                                     'creationTime': wardrobe.creationTime,
                                     'wardrobeType': wardrobe.wardrobeType,
+                                    'AdminId': wardrobe.adminId,
                                     'clothList': result
                                 });
                             });
@@ -130,13 +143,24 @@ wardrobeRouter.put('/register/:id', (req, res) => {
             if (uIdRes != null) {
                 authModel.verifyWardrobe((uIdRes), +(req.params.id), (err, valid) => {
                     if (valid) {
-                        let updatedWardrobe = req.body;
-                        updatedWardrobe.uId = uIdRes;
-                        wardrobeModel.update(+(req.params.id), (updatedWardrobe), (err, affectedRows) => {
+                        authModel.checkAdmin(+(req.params.id), (uIdRes), (err, admin) => {
                             if (err)
                                 res.send(err.message);
-                            if (affectedRows > 0) {
-                                res.status(200).send('Success!');
+                            else {
+                                if (admin) {
+                                    let updatedWardrobe = req.body;
+                                    updatedWardrobe.uId = uIdRes;
+                                    wardrobeModel.update(+(req.params.id), (updatedWardrobe), (err, affectedRows) => {
+                                        if (err)
+                                            res.send(err.message);
+                                        if (affectedRows > 0) {
+                                            res.status(200).send('Success!');
+                                        }
+                                    });
+                                }
+                                else {
+                                    res.status(401).send("User is not authorised to perform this action!");
+                                }
                             }
                         });
                     }

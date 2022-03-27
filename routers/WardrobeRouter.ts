@@ -17,6 +17,7 @@ wardrobeRouter.post('/register', (req: Request, res: Response) => {
     
                 let newWardrobe: Wardrobe = req.body;
                 newWardrobe.uId = uIdRes;
+                newWardrobe.adminId = uIdRes;
     
                 wardrobeModel.create(newWardrobe, (err: Error, insertId: number) => {
                     if (err) {
@@ -53,12 +54,24 @@ wardrobeRouter.delete('/:id', (req:Request, res:Response) => {
                 authModel.verifyWardrobe((uIdRes), +(req.params.id), (err: Error, valid: boolean) => {
     
                     if(valid){
-                        wardrobeModel.remove(+(req.params.id), (err: Error, affectedRows: number) => {
+
+                        authModel.checkAdmin(+(req.params.id),(uIdRes),(err: Error, admin: boolean) => {
                             if (err) res.send(err.message);
-                    
-                            if (affectedRows > 0) {
-                                res.status(200).send('Success!');
+                            else{
+                                if(admin){
+                                    wardrobeModel.remove(+(req.params.id), (err: Error, affectedRows: number) => {
+                                        if (err) res.send(err.message);
+                                
+                                        if (affectedRows > 0) {
+                                            res.status(200).send('Success!');
+                                        }
+                                    });
+                                }
+                                else{
+                                    res.status(401).send("User is not authorised to perform this action!");
+                                }
                             }
+                    
                         });
                     }
                     else{
@@ -99,6 +112,7 @@ wardrobeRouter.post('/:id', (req: Request, res: Response) => {
                                     'nickname': wardrobe.nickname,
                                     'creationTime': wardrobe.creationTime,
                                     'wardrobeType': wardrobe.wardrobeType,
+                                    'AdminId': wardrobe.adminId,
                                     'clothList': result
                                 });
                             });
@@ -132,16 +146,28 @@ wardrobeRouter.put('/register/:id', (req:Request, res:Response) => {
                 authModel.verifyWardrobe((uIdRes), +(req.params.id), (err: Error, valid: boolean) => {
     
                     if(valid){
-    
-                        let updatedWardrobe: Wardrobe = req.body;
-                        updatedWardrobe.uId = uIdRes;
-                
-                        wardrobeModel.update(+(req.params.id), (updatedWardrobe), (err: Error, affectedRows: number) => {
+
+                        authModel.checkAdmin(+(req.params.id),(uIdRes),(err: Error, admin: boolean) => {
                             if (err) res.send(err.message);
-                        
-                            if(affectedRows > 0){
-                                res.status(200).send('Success!');
+                            else{
+                                if(admin){
+
+                                    let updatedWardrobe: Wardrobe = req.body;
+                                    updatedWardrobe.uId = uIdRes;
+                            
+                                    wardrobeModel.update(+(req.params.id), (updatedWardrobe), (err: Error, affectedRows: number) => {
+                                        if (err) res.send(err.message);
+                                    
+                                        if(affectedRows > 0){
+                                            res.status(200).send('Success!');
+                                        }
+                                    });
+                                }
+                                else{
+                                    res.status(401).send("User is not authorised to perform this action!");
+                                }
                             }
+                    
                         });
                     }
                     else{

@@ -5,19 +5,20 @@ export interface Wardrobe {
     uId: number,
     id?: number,
     nickname: string,
-    creationTime?: Date;
-    wardrobeType: string;
+    creationTime?: Date,
+    wardrobeType: string,
+    adminId: number
 }
 
 export const create = (wardrobe: Wardrobe, callback: Function) => {
-    let queryString: string = `Insert Into Wardrobes (NickName, CreationTime, WardrobeType) Values (
-        ?, ?, ?    )`;
+    let queryString: string = `Insert Into Wardrobes (NickName, CreationTime, WardrobeType, AdminId) Values (
+        ?, ?, ?, ?)`;
 
-    let queryString2: string = 'Insert Into UsersWardrobes (uId, wId) Values (?,?    )';
+    let queryString2: string = 'Insert Into UsersWardrobes (uId, wId) Values (?,?)';
 
-    sqlClient.query(queryString, [wardrobe.nickname, wardrobe.creationTime, wardrobe.wardrobeType]
+    sqlClient.query(queryString, [wardrobe.nickname, wardrobe.creationTime, wardrobe.wardrobeType, wardrobe.adminId]
         , (err, result) => {
-            if (err) { callback(err) };
+            if (err) { return callback(err); };
 
             const insertId = (<OkPacket> result).insertId;
 
@@ -54,7 +55,8 @@ export const find = (wardrobeId: number, callback: Function) => {
             uId: -1,
             nickname: row.NickName,
             creationTime: row.CreationTime,
-            wardrobeType: row.WardrobeType
+            wardrobeType: row.WardrobeType,
+            adminId: row.AdminId
         };
 
         callback(null, wardrobe);
@@ -62,10 +64,10 @@ export const find = (wardrobeId: number, callback: Function) => {
 }
 
 export const update = (wardrobeId: number, updateValues: Wardrobe, callback: Function) => {
-    let queryString = `Update Wardrobes Set NickName = ?, CreationTime = ?, WardrobeType = ? Where wId = ?`;
+    let queryString = `Update Wardrobes Set NickName = ?, CreationTime = ?, WardrobeType = ?, AdminId = ? Where wId = ?`;
 
-    sqlClient.query(queryString, [updateValues.nickname, updateValues.creationTime,
-         updateValues.wardrobeType, wardrobeId],
+    sqlClient.query(queryString, [updateValues.nickname, updateValues.creationTime, 
+        updateValues.wardrobeType, updateValues.adminId, wardrobeId],
     (err, result) => {
         if (err) {callback(err)};
 

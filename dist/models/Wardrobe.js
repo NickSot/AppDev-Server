@@ -3,12 +3,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.clothList = exports.update = exports.find = exports.remove = exports.create = void 0;
 const db_1 = require("../db");
 const create = (wardrobe, callback) => {
-    let queryString = `Insert Into Wardrobes (NickName, CreationTime, WardrobeType) Values (
-        ?, ?, ?    )`;
-    let queryString2 = 'Insert Into UsersWardrobes (uId, wId) Values (?,?    )';
-    db_1.sqlClient.query(queryString, [wardrobe.nickname, wardrobe.creationTime, wardrobe.wardrobeType], (err, result) => {
+    let queryString = `Insert Into Wardrobes (NickName, CreationTime, WardrobeType, AdminId) Values (
+        ?, ?, ?, ?)`;
+    let queryString2 = 'Insert Into UsersWardrobes (uId, wId) Values (?,?)';
+    db_1.sqlClient.query(queryString, [wardrobe.nickname, wardrobe.creationTime, wardrobe.wardrobeType, wardrobe.adminId], (err, result) => {
         if (err) {
-            callback(err);
+            return callback(err);
         }
         ;
         const insertId = result.insertId;
@@ -43,16 +43,17 @@ const find = (wardrobeId, callback) => {
             uId: -1,
             nickname: row.NickName,
             creationTime: row.CreationTime,
-            wardrobeType: row.WardrobeType
+            wardrobeType: row.WardrobeType,
+            adminId: row.AdminId
         };
         callback(null, wardrobe);
     });
 };
 exports.find = find;
 const update = (wardrobeId, updateValues, callback) => {
-    let queryString = `Update Wardrobes Set NickName = ?, CreationTime = ?, WardrobeType = ? Where wId = ?`;
+    let queryString = `Update Wardrobes Set NickName = ?, CreationTime = ?, WardrobeType = ?, AdminId = ? Where wId = ?`;
     db_1.sqlClient.query(queryString, [updateValues.nickname, updateValues.creationTime,
-        updateValues.wardrobeType, wardrobeId], (err, result) => {
+        updateValues.wardrobeType, updateValues.adminId, wardrobeId], (err, result) => {
         if (err) {
             callback(err);
         }
