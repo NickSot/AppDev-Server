@@ -30,7 +30,7 @@ export const login = ((nickname: string, password: string, callback: Function) =
     let queryString: string = 'Select * From Users Where (NickName = ? Or Email = ?) And Pass = ?'
 
     sqlClient.query(queryString, [nickname, nickname, password], (err, result) => {
-        if (err) { callback(err) };
+        if (err) { return callback(err) };
 
         if((<RowDataPacket> result).length > 0){
             const row = (<RowDataPacket> result)[0];
@@ -58,7 +58,7 @@ export const remove = (userId: number, callback: Function) => {
     let queryString = `Delete From Users Where uId = ?`;
 
     sqlClient.query(queryString, [userId], (err, result) => {
-        if (err) {callback(err)};
+        if (err) {return callback(err)};
 
         const affectedRows = (<OkPacket> result).affectedRows;
         callback(null, affectedRows);
@@ -69,7 +69,7 @@ export const find = (userId: number, callback: Function) => {
     let queryString = `Select * From Users Where uId = ?`;
 
     sqlClient.query(queryString, [userId], (err, result) => {
-        if (err) {callback(err)};
+        if (err) {return callback(err)};
 
         const row = (<RowDataPacket> result)[0];
 
@@ -93,7 +93,7 @@ export const update = (userId: number, updateValues: User, callback: Function) =
         updateValues.password, updateValues.OauthToken, updateValues.gender,
         updateValues.avatar, userId],
     (err, result) => {
-        if (err) {callback(err)};
+        if (err) {return callback(err)};
 
         callback(null, (<OkPacket>result).affectedRows);
     });
@@ -103,7 +103,7 @@ export const userToWardrobe = ((userId: number, wardrobeId: number, callback: Fu
     let queryString = 'Insert Into UsersWardrobes (uId, wId) Values (?,?    )';
 
     sqlClient.query(queryString, [userId, wardrobeId], (err, result) => {
-        if (err) {callback(err)};
+        if (err) {return callback(err)};
 
         callback(null, (<OkPacket>result).affectedRows);
     });
@@ -113,7 +113,7 @@ export const userDelFromWardrobe = ((userId: number, wardrobeId: number, callbac
     let queryString = 'Call DeleteWardrobeUserRelationship(?, ?    )';
 
     sqlClient.query(queryString, [userId, wardrobeId], (err, result) => {
-        if (err) {callback(err)};
+        if (err) {return callback(err)};
 
         callback(null, (<OkPacket>result).affectedRows);
     });
@@ -123,7 +123,7 @@ export const wardList = ((userId: number, callback: Function) => {
     let queryString = 'Select w.wId, w.Nickname, w.CreationTime, w.WardrobeType From Users u Inner Join UsersWardrobes uw On u.uId = uw.uId Inner Join Wardrobes w On w.wId = uw.wId Where u.uId = ?'
 
     sqlClient.query(queryString, [userId], (err, result) => {
-        if(err) {callback(err)}
+        if(err) {return callback(err)}
 
         callback(null, <RowDataPacket> result)
     })

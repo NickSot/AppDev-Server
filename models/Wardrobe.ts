@@ -33,7 +33,7 @@ export const remove = (wardrobeId: number, callback: Function) => {
     let queryString2 = `Delete From UsersWardrobes Where wId = ?`;
 
     sqlClient.query(queryString, [wardrobeId], (err, result) => {
-        if (err) {callback(err)};
+        if (err) {return callback(err)};
 
         const affectedRows = (<OkPacket> result).affectedRows;
 
@@ -47,7 +47,7 @@ export const find = (wardrobeId: number, callback: Function) => {
     let queryString = `Select * From Wardrobes Where wId = ?`;
 
     sqlClient.query(queryString, [wardrobeId], (err, result) => {
-        if (err) {callback(err)};
+        if (err) {return callback(err)};
 
         const row = (<RowDataPacket> result)[0];
 
@@ -69,7 +69,7 @@ export const update = (wardrobeId: number, updateValues: Wardrobe, callback: Fun
     sqlClient.query(queryString, [updateValues.nickname, updateValues.creationTime, 
         updateValues.wardrobeType, updateValues.adminId, wardrobeId],
     (err, result) => {
-        if (err) {callback(err)};
+        if (err) {return callback(err)};
 
         callback(null, (<OkPacket>result).affectedRows);
     });
@@ -79,7 +79,7 @@ export const clothList = ((wardrobeId: number, callback: Function) => {
     let queryString = 'Select c.cId, c.ClothType, c.Image, c.OriginalWardrobeId From Wardrobes w Inner Join WardrobesClothes wc On w.wId = wc.wId Inner Join Clothes c On c.cId = wc.cId Where w.wId = ?'
 
     sqlClient.query(queryString, [wardrobeId], (err, result) => {
-        if(err) {callback(err)}
+        if(err) {return callback(err)}
 
         callback(null, <RowDataPacket> result)
     })

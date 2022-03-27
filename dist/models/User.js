@@ -20,7 +20,7 @@ exports.login = ((nickname, password, callback) => {
     let queryString = 'Select * From Users Where (NickName = ? Or Email = ?) And Pass = ?';
     db_1.sqlClient.query(queryString, [nickname, nickname, password], (err, result) => {
         if (err) {
-            callback(err);
+            return callback(err);
         }
         ;
         if (result.length > 0) {
@@ -45,7 +45,7 @@ const remove = (userId, callback) => {
     let queryString = `Delete From Users Where uId = ?`;
     db_1.sqlClient.query(queryString, [userId], (err, result) => {
         if (err) {
-            callback(err);
+            return callback(err);
         }
         ;
         const affectedRows = result.affectedRows;
@@ -57,7 +57,7 @@ const find = (userId, callback) => {
     let queryString = `Select * From Users Where uId = ?`;
     db_1.sqlClient.query(queryString, [userId], (err, result) => {
         if (err) {
-            callback(err);
+            return callback(err);
         }
         ;
         const row = result[0];
@@ -79,7 +79,7 @@ const update = (userId, updateValues, callback) => {
         updateValues.password, updateValues.OauthToken, updateValues.gender,
         updateValues.avatar, userId], (err, result) => {
         if (err) {
-            callback(err);
+            return callback(err);
         }
         ;
         callback(null, result.affectedRows);
@@ -90,7 +90,7 @@ exports.userToWardrobe = ((userId, wardrobeId, callback) => {
     let queryString = 'Insert Into UsersWardrobes (uId, wId) Values (?,?    )';
     db_1.sqlClient.query(queryString, [userId, wardrobeId], (err, result) => {
         if (err) {
-            callback(err);
+            return callback(err);
         }
         ;
         callback(null, result.affectedRows);
@@ -100,7 +100,7 @@ exports.userDelFromWardrobe = ((userId, wardrobeId, callback) => {
     let queryString = 'Call DeleteWardrobeUserRelationship(?, ?    )';
     db_1.sqlClient.query(queryString, [userId, wardrobeId], (err, result) => {
         if (err) {
-            callback(err);
+            return callback(err);
         }
         ;
         callback(null, result.affectedRows);
@@ -110,7 +110,7 @@ exports.wardList = ((userId, callback) => {
     let queryString = 'Select w.wId, w.Nickname, w.CreationTime, w.WardrobeType From Users u Inner Join UsersWardrobes uw On u.uId = uw.uId Inner Join Wardrobes w On w.wId = uw.wId Where u.uId = ?';
     db_1.sqlClient.query(queryString, [userId], (err, result) => {
         if (err) {
-            callback(err);
+            return callback(err);
         }
         callback(null, result);
     });

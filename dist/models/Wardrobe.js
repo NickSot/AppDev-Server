@@ -22,7 +22,7 @@ const remove = (wardrobeId, callback) => {
     let queryString2 = `Delete From UsersWardrobes Where wId = ?`;
     db_1.sqlClient.query(queryString, [wardrobeId], (err, result) => {
         if (err) {
-            callback(err);
+            return callback(err);
         }
         ;
         const affectedRows = result.affectedRows;
@@ -35,7 +35,7 @@ const find = (wardrobeId, callback) => {
     let queryString = `Select * From Wardrobes Where wId = ?`;
     db_1.sqlClient.query(queryString, [wardrobeId], (err, result) => {
         if (err) {
-            callback(err);
+            return callback(err);
         }
         ;
         const row = result[0];
@@ -55,7 +55,7 @@ const update = (wardrobeId, updateValues, callback) => {
     db_1.sqlClient.query(queryString, [updateValues.nickname, updateValues.creationTime,
         updateValues.wardrobeType, updateValues.adminId, wardrobeId], (err, result) => {
         if (err) {
-            callback(err);
+            return callback(err);
         }
         ;
         callback(null, result.affectedRows);
@@ -66,7 +66,7 @@ exports.clothList = ((wardrobeId, callback) => {
     let queryString = 'Select c.cId, c.ClothType, c.Image, c.OriginalWardrobeId From Wardrobes w Inner Join WardrobesClothes wc On w.wId = wc.wId Inner Join Clothes c On c.cId = wc.cId Where w.wId = ?';
     db_1.sqlClient.query(queryString, [wardrobeId], (err, result) => {
         if (err) {
-            callback(err);
+            return callback(err);
         }
         callback(null, result);
     });
