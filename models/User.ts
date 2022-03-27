@@ -27,9 +27,9 @@ export const create = (user: User, callback: Function) => {
 };
 
 export const login = ((nickname: string, password: string, callback: Function) => {
-    let queryString: string = 'Select * From Users Where NickName = ? And Pass = ?'
+    let queryString: string = 'Select * From Users Where (NickName = ? Or Email = ?) And Pass = ?'
 
-    sqlClient.query(queryString, [nickname, password], (err, result) => {
+    sqlClient.query(queryString, [nickname, nickname, password], (err, result) => {
         if (err) { callback(err) };
 
         if((<RowDataPacket> result).length > 0){

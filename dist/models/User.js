@@ -17,8 +17,8 @@ const create = (user, callback) => {
 };
 exports.create = create;
 exports.login = ((nickname, password, callback) => {
-    let queryString = 'Select * From Users Where NickName = ? And Pass = ?';
-    db_1.sqlClient.query(queryString, [nickname, password], (err, result) => {
+    let queryString = 'Select * From Users Where (NickName = ? Or Email = ?) And Pass = ?';
+    db_1.sqlClient.query(queryString, [nickname, nickname, password], (err, result) => {
         if (err) {
             callback(err);
         }
