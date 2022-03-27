@@ -58,6 +58,7 @@ const update = (wardrobeId, updateValues, callback) => {
             return callback(err);
         }
         ;
+        console.log(result);
         callback(null, result.affectedRows);
     });
 };

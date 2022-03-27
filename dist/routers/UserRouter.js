@@ -98,6 +98,7 @@ userRouter.post('/getInfo', (req, res) => {
                         if (err)
                             res.send(err.message);
                         res.status(200).send({
+                            "uId": user.id,
                             "email": user.email,
                             "nickname": user.nickname,
                             "password": user.password,

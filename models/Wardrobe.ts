@@ -71,6 +71,8 @@ export const update = (wardrobeId: number, updateValues: Wardrobe, callback: Fun
     (err, result) => {
         if (err) {return callback(err)};
 
+        console.log(result);
+
         callback(null, (<OkPacket>result).affectedRows);
     });
 }
