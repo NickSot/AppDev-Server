@@ -24,7 +24,7 @@ Create Table Wardrobes (
     NickName Varchar(50) NOT NULL,
     CreationTime Timestamp,
     WardrobeType Enum('Personal', 'Shared') NOT NULL,
-    AdminId Integer Not NULL
+    AdminId Integer
 );
 
 Drop Table If Exists Clothes;
@@ -72,14 +72,26 @@ End$
 
 Create Procedure DeleteUserWardrobeRelationship(userId Integer)
 Begin
-	Create Temporary Table If Not Exists wIds (wId Integer) Engine = Memory;
+	Declare Counter Integer Default 0;
     
-    Delete From wIds;
-    Insert Into wIds Select wId From UsersWardrobes Where uId = userId;
+	Drop Temporary Table If Exists wIds;
+	Create Temporary Table If Not Exists wIds (id Integer auto_increment Primary Key, wId Integer) Engine = Memory;
+
+	Insert Into wIds (wId) Select wId From UsersWardrobes Where uId = userId;
     
-    Delete From UsersWardrobes Where uId = userId;
+    Drop Temporary Table If Exists wIds_copy;
+	Create Temporary Table If Not Exists wIds_copy (id Integer auto_increment Primary Key, wId Integer) Engine = Memory;
+    Insert wIds_copy Select * From wIds;
+ 
+	Delete From UsersWardrobes Where uId = userId;
+ 
+	While Counter <= (Select Count(*) wIds) + 1 Do
+		Update Wardrobes Set AdminId = (Select uId From UsersWardrobes Where wId = (Select wId From wIds Where id = Counter) Order by uId Asc Limit 1) Where wId = (Select wId From wIds_copy Where id = Counter Limit 1);
+		Set Counter = Counter + 1;
+	End While;
+	
+	Delete From Wardrobes Where Wardrobes.wId In (Select wId From wIds) And Wardrobes.wId Not In (Select wId From UsersWardrobes);
     
-    Delete From Wardrobes Where Wardrobes.wId In (Select wId From wIds) And Wardrobes.wId Not In (Select wId From UsersWardrobes);
 End$
 
 Create Procedure DeleteWardrobeUserRelationship(userId Integer, wardrobeId Integer)
@@ -87,13 +99,14 @@ Begin
 	If wardrobeId is null Then
 		Call DeleteUserWardrobeRelationship(userId);
 	else
+		Drop Temporary Table If Exists wIds;
 		Create Temporary Table If Not Exists wIds (wId Integer) Engine = Memory;
 		Delete From wIds;
 		
         Insert Into wIds Select wId From UsersWardrobes Where uId = userId And wId = wardrobeId;
 		Delete From UsersWardrobes Where uId = userId;
         
-        Update Wardrobes Set AdminId = (Select uId From UsersWardrobes Where wId = wardrobeId Order By uId Desc Limit 1) Where Wardrobes.wId = wardrobeId;
+        Update Wardrobes Set AdminId = (Select uId From UsersWardrobes Where wId = wardrobeId Order By uId Asc Limit 1) Where Wardrobes.wId = wardrobeId;
         
 		Delete From Wardrobes Where Wardrobes.wId In (Select wId From wIds) And Wardrobes.wId Not In (Select wId From UsersWardrobes);
 	End If;
