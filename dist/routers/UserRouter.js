@@ -96,9 +96,9 @@ userRouter.post('/getInfo', (req, res) => {
                     let userAvatar = user.avatar.toString('base64');
                     userModel.wardList((uIdRes), (err, result) => {
                         if (err)
-                            res.send(err.message);
+                            return res.send(err.message);
                         res.status(200).send({
-                            "uId": user.id,
+                            "uId": uIdRes,
                             "email": user.email,
                             "nickname": user.nickname,
                             "password": user.password,

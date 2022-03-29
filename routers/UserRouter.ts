@@ -94,10 +94,10 @@ userRouter.post('/getInfo', (req: Request, res: Response) => {
             
                     userModel.wardList((uIdRes), (err: Error, result: Array<object>) => {
     
-                        if(err) res.send(err.message);
+                        if(err) return res.send(err.message);
             
                         res.status(200).send({
-                            "uId": user.id,
+                            "uId": uIdRes,
                             "email": user.email,
                             "nickname": user.nickname,
                             "password": user.password,

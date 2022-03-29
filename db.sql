@@ -88,12 +88,13 @@ Begin
 		Call DeleteUserWardrobeRelationship(userId);
 	else
 		Create Temporary Table If Not Exists wIds (wId Integer) Engine = Memory;
-		
 		Delete From wIds;
-		Insert Into wIds Select wId From UsersWardrobes Where uId = userId And wId = wardrobeId;
 		
+        Insert Into wIds Select wId From UsersWardrobes Where uId = userId And wId = wardrobeId;
 		Delete From UsersWardrobes Where uId = userId;
-		
+        
+        Update Wardrobes Set AdminId = (Select uId From UsersWardrobes Where wId = wardrobeId Order By uId Desc Limit 1) Where Wardrobes.wId = wardrobeId;
+        
 		Delete From Wardrobes Where Wardrobes.wId In (Select wId From wIds) And Wardrobes.wId Not In (Select wId From UsersWardrobes);
 	End If;
 End$
