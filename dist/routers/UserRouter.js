@@ -1,11 +1,7 @@
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
 }) : (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     o[k2] = m[k];
@@ -68,7 +64,8 @@ userRouter.post('/login', (req, res) => {
                 let userAvatar = user.avatar.toString('base64');
                 userModel.wardList((uId), (err, result) => {
                     if (err)
-                        res.send(err.message);
+                        return res.send(err.message);
+                    console.log(result);
                     res.status(200).send({
                         "uId": user.id,
                         "email": user.email,
@@ -175,17 +172,26 @@ userRouter.post('/register/addWardrobe', (req, res) => {
     if (authModel.checkCredentials(req.body.uNickname, req.body.uPassword)) {
         authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err, uIdRes) => {
             if (err)
-                res.send(err.message);
+                return res.send(err.message);
             if (uIdRes != null) {
                 authModel.verifyWardrobe((uIdRes), (req.body.wId), (err, valid) => {
                     if (err)
-                        res.send(err.message);
+                        return res.send(err.message);
                     if (!valid) {
-                        userModel.userToWardrobe((uIdRes), (req.body.wId), (err, affectedRows) => {
+                        authModel.verifyWardrobeShared(req.body.wId, (err, valid) => {
                             if (err)
-                                res.send(err.message);
-                            if (affectedRows > 0) {
-                                res.status(200).send('Success!');
+                                return res.send(err.message);
+                            if (valid) {
+                                userModel.userToWardrobe((uIdRes), (req.body.wId), (err, affectedRows) => {
+                                    if (err)
+                                        return res.send(err.message);
+                                    if (affectedRows > 0) {
+                                        res.status(200).send('Success!');
+                                    }
+                                });
+                            }
+                            else {
+                                res.send(409).send('This wardrobe cannot be accessed!');
                             }
                         });
                     }

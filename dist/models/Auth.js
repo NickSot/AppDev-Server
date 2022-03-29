@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.checkCredentials = exports.checkAdmin = exports.verifyCloth = exports.verifyClothOrigin = exports.verifyWardrobe = exports.verifyUser = void 0;
+exports.checkCredentials = exports.checkAdmin = exports.verifyCloth = exports.verifyClothOrigin = exports.verifyWardrobeShared = exports.verifyWardrobe = exports.verifyUser = void 0;
 const db_1 = require("../db");
 exports.verifyUser = ((nickname, password, callback) => {
     let queryString = 'Select uId From Users Where NickName = ? And Pass = ?';
@@ -27,6 +27,21 @@ exports.verifyWardrobe = ((uId, wId, callback) => {
         }
         ;
         if (result.length > 0) {
+            callback(null, true);
+        }
+        else {
+            callback(null, false);
+        }
+    });
+});
+exports.verifyWardrobeShared = ((wId, callback) => {
+    let queryString = 'Select * From Wardrobes Where wId = ?';
+    db_1.sqlClient.query(queryString, [wId], (err, result) => {
+        if (err) {
+            callback(err);
+        }
+        ;
+        if (result[0].wardrobeType == 'Shared') {
             callback(null, true);
         }
         else {

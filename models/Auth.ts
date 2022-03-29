@@ -35,6 +35,21 @@ export const verifyWardrobe = ((uId: number, wId: number, callback: Function) =>
     });
 });
 
+export const verifyWardrobeShared = ((wId: number, callback: Function) => {
+    let queryString: string = 'Select * From Wardrobes Where wId = ?'
+
+    sqlClient.query(queryString, [wId], (err, result) => {
+        if (err) { callback(err) };
+
+        if((<RowDataPacket>result)[0].wardrobeType == 'Shared'){
+            callback(null, true);
+        }
+        else{
+            callback(null, false);
+        }
+    });
+});
+
 export const verifyClothOrigin = ((wId: number, cId:number, callback: Function) => {
     let queryString: string = 'Select * From Clothes Where OriginalWardrobeId = ? And cId = ?'
 

@@ -53,7 +53,9 @@ userRouter.post('/login', (req: Request, res: Response) => {
     
                 userModel.wardList((uId), (err: Error, result: Array<object>) => {
     
-                    if(err) res.send(err.message);
+                    if(err) return res.send(err.message);
+
+                    console.log(result);
             
                     res.status(200).send({
                         "uId": user.id,
@@ -179,27 +181,36 @@ userRouter.put('/register/update', (req:Request, res:Response) => {
 });
 
 userRouter.post('/register/addWardrobe', (req:Request, res:Response) => {
-
+    
     if(authModel.checkCredentials(req.body.uNickname, req.body.uPassword)){
 
         authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err: Error, uIdRes?: number) => {
-            if(err) res.send(err.message);
+            if(err) return res.send(err.message);
             
             if(uIdRes != null){
 
                 authModel.verifyWardrobe((uIdRes), (req.body.wId), (err: Error, valid: boolean) => {
-                    if(err) res.send(err.message);
-    
-                    if(!valid){
-                        userModel.userToWardrobe((uIdRes), (req.body.wId), (err:Error, affectedRows: number) => {
-                            if (err) res.send(err.message);
+                    if(err) return res.send(err.message);
                     
-                            if(affectedRows > 0){
-                                res.status(200).send('Success!');
+                    if (!valid){
+                        authModel.verifyWardrobeShared(req.body.wId, (err: Error, valid: boolean) => {
+                            if (err) return res.send(err.message);
+
+                            if(valid){
+                                userModel.userToWardrobe((uIdRes), (req.body.wId), (err:Error, affectedRows: number) => {
+                                    if (err) return res.send(err.message);
+                            
+                                    if(affectedRows > 0){
+                                        res.status(200).send('Success!');
+                                    }
+                                });
+                            }
+                            else{
+                                res.send(409).send('This wardrobe cannot be accessed!');
                             }
                         });
                     }
-                    else{
+                    else {
                         res.status(409).send("User is already registered to wardrobe!");
                     }
                 });
