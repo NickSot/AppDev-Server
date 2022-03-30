@@ -120,7 +120,7 @@ export const userDelFromWardrobe = ((userId: number, wardrobeId: number, callbac
 });
 
 export const wardList = ((userId: number, callback: Function) => {
-    let queryString = 'Select w.wId, w.Nickname, w.CreationTime, w.WardrobeType From Users u Inner Join UsersWardrobes uw On u.uId = uw.uId Inner Join Wardrobes w On w.wId = uw.wId Where u.uId = ?'
+    let queryString = 'Select w.wId, w.Nickname, w.CreationTime, w.WardrobeType, w.AdminId From Users u Inner Join UsersWardrobes uw On u.uId = uw.uId Inner Join Wardrobes w On w.wId = uw.wId Where u.uId = ?'
 
     sqlClient.query(queryString, [userId], (err, result) => {
         if(err) {return callback(err)}

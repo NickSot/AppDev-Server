@@ -41,7 +41,8 @@ exports.verifyWardrobeShared = ((wId, callback) => {
             callback(err);
         }
         ;
-        if (result[0].wardrobeType == 'Shared') {
+        console.log(result[0].wardrobeType);
+        if (result[0].WardrobeType == 'Shared') {
             callback(null, true);
         }
         else {
