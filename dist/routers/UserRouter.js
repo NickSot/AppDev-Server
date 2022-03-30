@@ -178,27 +178,31 @@ userRouter.put('/register/update', (req, res) => {
 userRouter.post('/register/addWardrobe', (req, res) => {
     if (authModel.checkCredentials(req.body.uNickname, req.body.uPassword)) {
         authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err, uIdRes) => {
-            if (err)
+            if (err) {
                 return res.send(err.message);
+            }
             if (uIdRes != null) {
                 authModel.verifyWardrobe((uIdRes), (req.body.wId), (err, valid) => {
-                    if (err)
+                    if (err) {
                         return res.send(err.message);
+                    }
                     if (!valid) {
                         authModel.verifyWardrobeShared(req.body.wId, (err, valid) => {
-                            if (err)
+                            if (err) {
                                 return res.send(err.message);
+                            }
                             if (valid) {
                                 userModel.userToWardrobe((uIdRes), (req.body.wId), (err, affectedRows) => {
-                                    if (err)
+                                    if (err) {
                                         return res.send(err.message);
+                                    }
                                     if (affectedRows > 0) {
                                         res.status(200).send('Success!');
                                     }
                                 });
                             }
                             else {
-                                res.send(409).send('This wardrobe cannot be accessed!');
+                                res.status(409).send('This wardrobe cannot be accessed!');
                             }
                         });
                     }

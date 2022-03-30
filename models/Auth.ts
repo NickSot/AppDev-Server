@@ -41,7 +41,9 @@ export const verifyWardrobeShared = ((wId: number, callback: Function) => {
     sqlClient.query(queryString, [wId], (err, result) => {
         if (err) { callback(err) };
 
-        if((<RowDataPacket>result)[0].wardrobeType == 'Shared'){
+        console.log((<RowDataPacket>result)[0].wardrobeType);
+
+        if((<RowDataPacket>result)[0].WardrobeType == 'Shared'){
             callback(null, true);
         }
         else{
