@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.clothList = exports.update = exports.find = exports.remove = exports.create = void 0;
+exports.userList = exports.clothList = exports.update = exports.find = exports.remove = exports.create = void 0;
 const db_1 = require("../db");
 const create = (wardrobe, callback) => {
     let queryString = `Insert Into Wardrobes (NickName, CreationTime, WardrobeType, AdminId) Values (
@@ -65,6 +65,15 @@ const update = (wardrobeId, updateValues, callback) => {
 exports.update = update;
 exports.clothList = ((wardrobeId, callback) => {
     let queryString = 'Select c.cId, c.ClothType, c.Image, c.OriginalWardrobeId From Wardrobes w Inner Join WardrobesClothes wc On w.wId = wc.wId Inner Join Clothes c On c.cId = wc.cId Where w.wId = ?';
+    db_1.sqlClient.query(queryString, [wardrobeId], (err, result) => {
+        if (err) {
+            return callback(err);
+        }
+        callback(null, result);
+    });
+});
+exports.userList = ((wardrobeId, callback) => {
+    let queryString = 'Select u.uId, u.Nickname From Wardrobes w Inner Join UsersWardrobes uw On w.wId = uw.wId Inner Join Users u On u.uId = uw.uId Where w.wId = ?';
     db_1.sqlClient.query(queryString, [wardrobeId], (err, result) => {
         if (err) {
             return callback(err);

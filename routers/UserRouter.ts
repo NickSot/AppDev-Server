@@ -47,6 +47,8 @@ userRouter.post('/login', (req: Request, res: Response) => {
 
         userModel.login((req.body.uNickname), (req.body.uPassword), (err: Error, user?: User, uId?: number) => {
 
+            if(err) {return res.send(err.message);}
+
             if((user != null) && (uId != null)){
     
                 let userAvatar = user.avatar.toString('base64');
@@ -87,7 +89,7 @@ userRouter.post('/getInfo', (req: Request, res: Response) => {
     if(authModel.checkCredentials(req.body.uNickname, req.body.uPassword)){
 
         authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err: Error, uIdRes?: number) => {
-            if(err) res.send(err.message);
+            if(err) return res.send(err.message);
     
             if(uIdRes != null){
                 userModel.find((uIdRes), (err: Error, user: User) => {
@@ -127,11 +129,11 @@ userRouter.delete('/delUser', (req:Request, res:Response) => {
     if(authModel.checkCredentials(req.body.uNickname, req.body.uPassword)){
 
         authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err: Error, uIdRes?: number) => {
-            if(err) res.send(err.message);
+            if(err) return res.send(err.message);
     
             if(uIdRes != null){
                 userModel.remove((uIdRes), (err: Error, affectedRows: number) => {
-                    if (err) res.send(err.message);
+                    if (err) return res.send(err.message);
             
                     if (affectedRows > 0) {
                         res.status(200).send('Success!');
@@ -158,11 +160,11 @@ userRouter.put('/register/update', (req:Request, res:Response) => {
         updatedUser.avatar = Buffer.from(req.body.avatar, 'base64');
     
         authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err: Error, uIdRes?: number) => {
-            if(err) res.send(err.message);
+            if(err) return res.send(err.message);
             
             if(uIdRes != null){
                 userModel.update((uIdRes), (updatedUser), (err: Error, affectedRows: number) => {
-                    if (err) res.send(err.message);
+                    if (err) return res.send(err.message);
             
                     if(affectedRows > 0){
                         res.status(200).send('Success!');
@@ -230,12 +232,12 @@ userRouter.delete('/register/delWardrobe', (req:Request, res:Response) => {
     if(authModel.checkCredentials(req.body.uNickname, req.body.uPassword)){
 
         authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err: Error, uIdRes?: number) => {
-            if(err) res.send(err.message);
+            if(err) return res.send(err.message);
             
             if(uIdRes != null){
 
                 authModel.verifyWardrobe((uIdRes), (req.body.wId), (err: Error, valid: boolean) => {
-                    if(err) res.send(err.message);
+                    if(err) return res.send(err.message);
     
                     if(valid){
 

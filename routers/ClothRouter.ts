@@ -11,7 +11,7 @@ clothRouter.post('/register', (req: Request, res: Response) => {
     if(authModel.checkCredentials(req.body.uNickname, req.body.uPassword)){
 
         authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err: Error, uIdRes?: number) => {
-            if(err) res.send(err.message);
+            if(err) return res.send(err.message);
     
             if(uIdRes != null){
     
@@ -54,17 +54,17 @@ clothRouter.delete('/:id', (req:Request, res:Response) => {
     if(authModel.checkCredentials(req.body.uNickname, req.body.uPassword)){
 
         authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err: Error, uIdRes?: number) => {
-            if(err) res.send(err.message);
+            if(err) return res.send(err.message);
     
             if(uIdRes != null){
     
                 authModel.verifyWardrobe((uIdRes), (req.body.ogWarId), (err: Error, wValid: boolean) => {
-                    if(err) res.send(err.message);
+                    if(err) return res.send(err.message);
     
                     if(wValid){
     
                         authModel.verifyClothOrigin((req.body.ogWarId), +(req.params.id), (err: Error, cValid: boolean)=>{
-                            if(err) res.send(err.message);
+                            if(err) return res.send(err.message);
     
                             if(cValid){
     
@@ -101,17 +101,17 @@ clothRouter.post('/:id', (req: Request, res: Response) => {
     if(authModel.checkCredentials(req.body.uNickname, req.body.uPassword)){
 
         authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err: Error, uIdRes?: number) => {
-            if(err) res.send(err.message);
+            if(err) return res.send(err.message);
     
             if(uIdRes != null){
     
                 authModel.verifyWardrobe((uIdRes), (req.body.wId), (err: Error, wValid: boolean) => {
-                    if(err) res.send(err.message);
+                    if(err) return res.send(err.message);
     
                     if(wValid){
     
                         authModel.verifyCloth((req.body.wId), +(req.params.id), (err: Error, cValid: boolean)=>{
-                            if(err) res.send(err.message);
+                            if(err) return res.send(err.message);
     
                             if(cValid){
     
@@ -149,24 +149,24 @@ clothRouter.put('/register/:id', (req:Request, res:Response) => {
     if(authModel.checkCredentials(req.body.uNickname, req.body.uPassword)){
 
         authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err: Error, uIdRes?: number) => {
-            if(err) res.send(err.message);
+            if(err) return res.send(err.message);
     
             if(uIdRes != null){
     
                 let updatedCloth: Cloth = req.body;
     
                 authModel.verifyWardrobe((uIdRes), (req.body.ogWarId), (err: Error, wValid: boolean) => {
-                    if(err) res.send(err.message);
+                    if(err) return res.send(err.message);
     
                     if(wValid){
     
                         authModel.verifyClothOrigin((req.body.ogWarId), +(req.params.id), (err: Error, cValid: boolean)=>{
-                            if(err) res.send(err.message);
+                            if(err) return res.send(err.message);
     
                             if(cValid){
     
                                 clothModel.update(+(req.params.id), (updatedCloth), (err: Error, affectedRows: number) => {
-                                    if (err) res.send(err.message);
+                                    if (err) return res.send(err.message);
                             
                                     if(affectedRows > 0){
                                         res.status(200).send('Success!');
@@ -198,27 +198,27 @@ clothRouter.post('/register/:id', (req:Request, res:Response) => {
     if(authModel.checkCredentials(req.body.uNickname, req.body.uPassword)){
 
         authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err: Error, uIdRes?: number) => {
-            if(err) res.send(err.message);
+            if(err) return res.send(err.message);
     
             if(uIdRes != null){
     
                 authModel.verifyWardrobe((uIdRes), (req.body.ogWarId), (err: Error, wValid: boolean) => {
-                    if(err) res.send(err.message);
+                    if(err) return res.send(err.message);
     
                     if(wValid){
     
                         authModel.verifyClothOrigin((req.body.ogWarId), +(req.params.id), (err: Error, cOgValid: boolean)=>{
-                            if(err) res.send(err.message);
+                            if(err) return res.send(err.message);
     
                             if(cOgValid){
 
                                 authModel.verifyCloth((req.body.wId), +(req.params.id), (err: Error, cValid: boolean)=>{
-                                    if(err) res.send(err.message);
+                                    if(err) return res.send(err.message);
             
                                     if(!cValid){
 
                                         clothModel.clothToWardrobe(+(req.params.id), (req.body.wId), (err:Error, affectedRows: number) => {
-                                            if (err) res.send(err.message);
+                                            if (err) return res.send(err.message);
                                     
                                             if(affectedRows > 0){
                                                 res.status(200).send('Success!');
@@ -255,27 +255,27 @@ clothRouter.delete('/register/:id', (req:Request, res:Response) => {
     if(authModel.checkCredentials(req.body.uNickname, req.body.uPassword)){
 
         authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err: Error, uIdRes?: number) => {
-            if(err) res.send(err.message);
+            if(err) return res.send(err.message);
     
             if(uIdRes != null){
     
                 authModel.verifyWardrobe((uIdRes), (req.body.ogWarId), (err: Error, wValid: boolean) => {
-                    if(err) res.send(err.message);
+                    if(err) return res.send(err.message);
     
                     if(wValid){
     
                         authModel.verifyClothOrigin((req.body.ogWarId), +(req.params.id), (err: Error, cOgValid: boolean)=>{
-                            if(err) res.send(err.message);
+                            if(err) return res.send(err.message);
     
                             if(cOgValid){
 
                                 authModel.verifyCloth((req.body.wId), +(req.params.id), (err: Error, cValid: boolean)=>{
-                                    if(err) res.send(err.message);
+                                    if(err) return res.send(err.message);
             
                                     if(cValid){
 
                                         clothModel.clothDelFromWardrobe(+(req.params.id), (req.body.wId), (err:Error, affectedRows: number) => {
-                                            if (err) res.send(err.message);
+                                            if (err) return res.send(err.message);
                                     
                                             if(affectedRows > 0){
                                                 res.status(200).send('Success!');
