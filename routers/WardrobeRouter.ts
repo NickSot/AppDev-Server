@@ -148,7 +148,7 @@ wardrobeRouter.put('/register/:id', (req:Request, res:Response) => {
             if(err) {return res.send(err.message);}
         
             if(uIdRes != null){
-    
+
                 authModel.verifyWardrobe((uIdRes), +(req.params.id), (err: Error, valid: boolean) => {
     
                     if(valid){
