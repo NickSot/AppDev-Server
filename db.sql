@@ -12,7 +12,7 @@ Create Table Users (
     Email Varchar(50) Unique NOT NULL,
     NickName Varchar(50) Unique NOT NULL,
     Pass Varchar(1024) NOT NULL,
-    Avatar Blob,
+    Avatar Varchar(200),
     Gender Varchar(50),
     OauthToken Varchar(100)
 );
@@ -31,8 +31,8 @@ Drop Table If Exists Clothes;
 
 Create Table Clothes (
 	cId Integer Primary Key auto_increment NOT NULL,
-    ClothType Enum ('Head', 'UpperBody', 'LowerBody',
-		'Feet', 'Hands', 'Groin') NOT NULL,
+    ClothType Enum ('Shirt', 'Pants', 'Skirt',
+		'Dress', 'Shoe', 'Jacket') NOT NULL,
 	Image Varchar(200) NOT NULL,
     OriginalWardrobeId Integer NOT NULL,
     foreign key (OriginalWardrobeId) References Wardrobes(wId) On Delete Cascade
@@ -103,8 +103,8 @@ Begin
 		Create Temporary Table If Not Exists wIds (wId Integer) Engine = Memory;
 		Delete From wIds;
 		
-        Insert Into wIds Select wId From UsersWardrobes Where uId = userId And wId = wardrobeId;
-		Delete From UsersWardrobes Where uId = userId;
+        Insert wIds (Select wId From UsersWardrobes Where uId = userId And wId = wardrobeId);
+		Delete From UsersWardrobes Where uId = userId AND wId = wardrobeId;
         
         Update Wardrobes Set AdminId = (Select uId From UsersWardrobes Where wId = wardrobeId Order By uId Asc Limit 1) Where Wardrobes.wId = wardrobeId;
         
