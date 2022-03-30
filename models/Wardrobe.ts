@@ -86,3 +86,13 @@ export const clothList = ((wardrobeId: number, callback: Function) => {
         callback(null, <RowDataPacket> result)
     })
 });
+
+export const userList = ((wardrobeId: number, callback: Function) => {
+    let queryString = 'Select u.uId, u.Nickname From Wardrobes w Inner Join UsersWardrobes uw On w.wId = uw.wId Inner Join Users u On u.uId = uw.uId Where w.wId = ?'
+
+    sqlClient.query(queryString, [wardrobeId], (err, result) => {
+        if(err) {return callback(err)}
+
+        callback(null, <RowDataPacket> result)
+    })
+});

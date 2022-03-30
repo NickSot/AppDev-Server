@@ -11,7 +11,7 @@ wardrobeRouter.post('/register', (req: Request, res: Response) => {
     if(authModel.checkCredentials(req.body.uNickname, req.body.uPassword)){
 
         authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err: Error, uIdRes?: number) => {
-            if(err) res.send(err.message);
+            if(err) {return res.send(err.message);}
     
             if(uIdRes != null){
     
@@ -47,7 +47,7 @@ wardrobeRouter.delete('/:id', (req:Request, res:Response) => {
     if(authModel.checkCredentials(req.body.uNickname, req.body.uPassword)){
 
         authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err: Error, uIdRes?: number) => {
-            if(err) res.send(err.message);
+            if(err) {return res.send(err.message);}
     
             if(uIdRes != null){
     
@@ -56,11 +56,11 @@ wardrobeRouter.delete('/:id', (req:Request, res:Response) => {
                     if(valid){
 
                         authModel.checkAdmin(+(req.params.id),(uIdRes),(err: Error, admin: boolean) => {
-                            if (err) res.send(err.message);
+                            if (err) {return res.send(err.message);}
                             else{
                                 if(admin){
                                     wardrobeModel.remove(+(req.params.id), (err: Error, affectedRows: number) => {
-                                        if (err) res.send(err.message);
+                                        if (err) {return res.send(err.message);}
                                 
                                         if (affectedRows > 0) {
                                             res.status(200).send('Success!');
@@ -94,11 +94,12 @@ wardrobeRouter.post('/:id', (req: Request, res: Response) => {
     if(authModel.checkCredentials(req.body.uNickname, req.body.uPassword)){
 
         authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err: Error, uIdRes?: number) => {
-            if(err) res.send(err.message);
+            if(err) {return res.send(err.message);}
     
             if(uIdRes != null){
     
                 authModel.verifyWardrobe((uIdRes), +(req.params.id), (err: Error, valid: boolean) => {
+                    if(err) {return res.send(err.message);}
     
                     if(valid){
     
@@ -106,14 +107,19 @@ wardrobeRouter.post('/:id', (req: Request, res: Response) => {
     
                             wardrobeModel.clothList(+(req.params.id), (err: Error, result: Array<object>) =>{
                                 
-                                if(err) res.send(err.message);
-                    
-                                res.status(200).send({
-                                    'nickname': wardrobe.nickname,
-                                    'creationTime': wardrobe.creationTime,
-                                    'wardrobeType': wardrobe.wardrobeType,
-                                    'AdminId': wardrobe.adminId,
-                                    'clothList': result
+                                if(err) {return res.send(err.message);}
+
+                                wardrobeModel.userList(+(req.params.id),(err: Error, userRes: Array<object>) =>{
+                                    if(err) {return res.send(err.message);}
+
+                                    res.status(200).send({
+                                        'nickname': wardrobe.nickname,
+                                        'creationTime': wardrobe.creationTime,
+                                        'wardrobeType': wardrobe.wardrobeType,
+                                        'AdminId': wardrobe.adminId,
+                                        'clothList': result,
+                                        'userList':userRes
+                                    });
                                 });
                             });
                         });
@@ -139,7 +145,7 @@ wardrobeRouter.put('/register/:id', (req:Request, res:Response) => {
     if(authModel.checkCredentials(req.body.uNickname, req.body.uPassword)){
 
         authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err: Error, uIdRes?: number) => {
-            if(err) res.send(err.message);
+            if(err) {return res.send(err.message);}
         
             if(uIdRes != null){
     
@@ -148,7 +154,7 @@ wardrobeRouter.put('/register/:id', (req:Request, res:Response) => {
                     if(valid){
 
                         authModel.checkAdmin(+(req.params.id),(uIdRes),(err: Error, admin: boolean) => {
-                            if (err) res.send(err.message);
+                            if(err) {return res.send(err.message);}
                             else{
                                 if(admin){
 

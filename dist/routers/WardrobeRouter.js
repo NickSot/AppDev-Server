@@ -1,7 +1,11 @@
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
 }) : (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     o[k2] = m[k];
@@ -31,8 +35,9 @@ exports.wardrobeRouter = wardrobeRouter;
 wardrobeRouter.post('/register', (req, res) => {
     if (authModel.checkCredentials(req.body.uNickname, req.body.uPassword)) {
         authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err, uIdRes) => {
-            if (err)
-                res.send(err.message);
+            if (err) {
+                return res.send(err.message);
+            }
             if (uIdRes != null) {
                 let newWardrobe = req.body;
                 newWardrobe.uId = uIdRes;
@@ -61,19 +66,22 @@ wardrobeRouter.post('/register', (req, res) => {
 wardrobeRouter.delete('/:id', (req, res) => {
     if (authModel.checkCredentials(req.body.uNickname, req.body.uPassword)) {
         authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err, uIdRes) => {
-            if (err)
-                res.send(err.message);
+            if (err) {
+                return res.send(err.message);
+            }
             if (uIdRes != null) {
                 authModel.verifyWardrobe((uIdRes), +(req.params.id), (err, valid) => {
                     if (valid) {
                         authModel.checkAdmin(+(req.params.id), (uIdRes), (err, admin) => {
-                            if (err)
-                                res.send(err.message);
+                            if (err) {
+                                return res.send(err.message);
+                            }
                             else {
                                 if (admin) {
                                     wardrobeModel.remove(+(req.params.id), (err, affectedRows) => {
-                                        if (err)
-                                            res.send(err.message);
+                                        if (err) {
+                                            return res.send(err.message);
+                                        }
                                         if (affectedRows > 0) {
                                             res.status(200).send('Success!');
                                         }
@@ -102,21 +110,32 @@ wardrobeRouter.delete('/:id', (req, res) => {
 wardrobeRouter.post('/:id', (req, res) => {
     if (authModel.checkCredentials(req.body.uNickname, req.body.uPassword)) {
         authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err, uIdRes) => {
-            if (err)
-                res.send(err.message);
+            if (err) {
+                return res.send(err.message);
+            }
             if (uIdRes != null) {
                 authModel.verifyWardrobe((uIdRes), +(req.params.id), (err, valid) => {
+                    if (err) {
+                        return res.send(err.message);
+                    }
                     if (valid) {
                         wardrobeModel.find(+(req.params.id), (err, wardrobe) => {
                             wardrobeModel.clothList(+(req.params.id), (err, result) => {
-                                if (err)
-                                    res.send(err.message);
-                                res.status(200).send({
-                                    'nickname': wardrobe.nickname,
-                                    'creationTime': wardrobe.creationTime,
-                                    'wardrobeType': wardrobe.wardrobeType,
-                                    'AdminId': wardrobe.adminId,
-                                    'clothList': result
+                                if (err) {
+                                    return res.send(err.message);
+                                }
+                                wardrobeModel.userList(+(req.params.id), (err, userRes) => {
+                                    if (err) {
+                                        return res.send(err.message);
+                                    }
+                                    res.status(200).send({
+                                        'nickname': wardrobe.nickname,
+                                        'creationTime': wardrobe.creationTime,
+                                        'wardrobeType': wardrobe.wardrobeType,
+                                        'AdminId': wardrobe.adminId,
+                                        'clothList': result,
+                                        'userList': userRes
+                                    });
                                 });
                             });
                         });
@@ -138,14 +157,16 @@ wardrobeRouter.post('/:id', (req, res) => {
 wardrobeRouter.put('/register/:id', (req, res) => {
     if (authModel.checkCredentials(req.body.uNickname, req.body.uPassword)) {
         authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err, uIdRes) => {
-            if (err)
-                res.send(err.message);
+            if (err) {
+                return res.send(err.message);
+            }
             if (uIdRes != null) {
                 authModel.verifyWardrobe((uIdRes), +(req.params.id), (err, valid) => {
                     if (valid) {
                         authModel.checkAdmin(+(req.params.id), (uIdRes), (err, admin) => {
-                            if (err)
-                                res.send(err.message);
+                            if (err) {
+                                return res.send(err.message);
+                            }
                             else {
                                 if (admin) {
                                     let updatedWardrobe = req.body;

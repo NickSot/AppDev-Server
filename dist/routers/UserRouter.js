@@ -1,7 +1,11 @@
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
 }) : (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     o[k2] = m[k];
@@ -60,6 +64,9 @@ userRouter.post('/register', (req, res) => {
 userRouter.post('/login', (req, res) => {
     if (authModel.checkCredentials(req.body.uNickname, req.body.uPassword)) {
         userModel.login((req.body.uNickname), (req.body.uPassword), (err, user, uId) => {
+            if (err) {
+                return res.send(err.message);
+            }
             if ((user != null) && (uId != null)) {
                 let userAvatar = user.avatar.toString('base64');
                 userModel.wardList((uId), (err, result) => {
@@ -91,7 +98,7 @@ userRouter.post('/getInfo', (req, res) => {
     if (authModel.checkCredentials(req.body.uNickname, req.body.uPassword)) {
         authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err, uIdRes) => {
             if (err)
-                res.send(err.message);
+                return res.send(err.message);
             if (uIdRes != null) {
                 userModel.find((uIdRes), (err, user) => {
                     let userAvatar = user.avatar.toString('base64');
@@ -124,11 +131,11 @@ userRouter.delete('/delUser', (req, res) => {
     if (authModel.checkCredentials(req.body.uNickname, req.body.uPassword)) {
         authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err, uIdRes) => {
             if (err)
-                res.send(err.message);
+                return res.send(err.message);
             if (uIdRes != null) {
                 userModel.remove((uIdRes), (err, affectedRows) => {
                     if (err)
-                        res.send(err.message);
+                        return res.send(err.message);
                     if (affectedRows > 0) {
                         res.status(200).send('Success!');
                     }
@@ -149,11 +156,11 @@ userRouter.put('/register/update', (req, res) => {
         updatedUser.avatar = Buffer.from(req.body.avatar, 'base64');
         authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err, uIdRes) => {
             if (err)
-                res.send(err.message);
+                return res.send(err.message);
             if (uIdRes != null) {
                 userModel.update((uIdRes), (updatedUser), (err, affectedRows) => {
                     if (err)
-                        res.send(err.message);
+                        return res.send(err.message);
                     if (affectedRows > 0) {
                         res.status(200).send('Success!');
                     }
@@ -213,11 +220,11 @@ userRouter.delete('/register/delWardrobe', (req, res) => {
     if (authModel.checkCredentials(req.body.uNickname, req.body.uPassword)) {
         authModel.verifyUser((req.body.uNickname), (req.body.uPassword), (err, uIdRes) => {
             if (err)
-                res.send(err.message);
+                return res.send(err.message);
             if (uIdRes != null) {
                 authModel.verifyWardrobe((uIdRes), (req.body.wId), (err, valid) => {
                     if (err)
-                        res.send(err.message);
+                        return res.send(err.message);
                     if (valid) {
                         userModel.userDelFromWardrobe((uIdRes), (req.body.wId), (err, affectedRows) => {
                             if (err)
