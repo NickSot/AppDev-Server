@@ -242,7 +242,7 @@ userRouter.delete('/register/delWardrobe', (req:Request, res:Response) => {
                     if(valid){
 
                         userModel.userDelFromWardrobe((uIdRes), (req.body.wId), (err:Error, affectedRows: number) => {
-                            if (err) res.send(err.message);
+                            if (err) return res.send(err.message);
                     
                                 res.status(200).send('Success!');
                         });
