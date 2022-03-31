@@ -10,8 +10,6 @@ const userRouter = express.Router();
 userRouter.post('/register', (req: Request, res: Response) => {
     let newUser: User = req.body;
 
-    newUser.avatar = Buffer.from(req.body.avatar, 'base64');
-
     emailCheck(newUser.email)
             .then(function (result) {
                 if (result) {
@@ -51,8 +49,6 @@ userRouter.post('/login', (req: Request, res: Response) => {
 
             if((user != null) && (uId != null)){
     
-                let userAvatar = user.avatar.toString('base64');
-    
                 userModel.wardList((uId), (err: Error, result: Array<object>) => {
     
                     if(err) return res.send(err.message);
@@ -62,7 +58,7 @@ userRouter.post('/login', (req: Request, res: Response) => {
                         "email": user.email,
                         "nickname": user.nickname,
                         "password": user.password,
-                        "avatar": userAvatar,
+                        "avatar": user.avatar,
                         "gender": user.gender,
                         "oauthToken": user.OauthToken,
                         "wardList": result
@@ -91,8 +87,6 @@ userRouter.post('/getInfo', (req: Request, res: Response) => {
     
             if(uIdRes != null){
                 userModel.find((uIdRes), (err: Error, user: User) => {
-    
-                    let userAvatar = user.avatar.toString('base64');
             
                     userModel.wardList((uIdRes), (err: Error, result: Array<object>) => {
     
@@ -103,7 +97,7 @@ userRouter.post('/getInfo', (req: Request, res: Response) => {
                             "email": user.email,
                             "nickname": user.nickname,
                             "password": user.password,
-                            "avatar": userAvatar,
+                            "avatar": user.avatar,
                             "gender": user.gender,
                             "oauthToken": user.OauthToken,
                             "wardList": result

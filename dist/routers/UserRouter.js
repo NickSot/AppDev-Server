@@ -1,7 +1,11 @@
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
 }) : (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     o[k2] = m[k];
@@ -31,7 +35,6 @@ const userRouter = express_1.default.Router();
 exports.userRouter = userRouter;
 userRouter.post('/register', (req, res) => {
     let newUser = req.body;
-    newUser.avatar = Buffer.from(req.body.avatar, 'base64');
     (0, email_check_1.default)(newUser.email)
         .then(function (result) {
         if (result) {
@@ -64,17 +67,15 @@ userRouter.post('/login', (req, res) => {
                 return res.send(err.message);
             }
             if ((user != null) && (uId != null)) {
-                let userAvatar = user.avatar.toString('base64');
                 userModel.wardList((uId), (err, result) => {
                     if (err)
                         return res.send(err.message);
-                    console.log(result);
                     res.status(200).send({
                         "uId": user.id,
                         "email": user.email,
                         "nickname": user.nickname,
                         "password": user.password,
-                        "avatar": userAvatar,
+                        "avatar": user.avatar,
                         "gender": user.gender,
                         "oauthToken": user.OauthToken,
                         "wardList": result
@@ -97,7 +98,6 @@ userRouter.post('/getInfo', (req, res) => {
                 return res.send(err.message);
             if (uIdRes != null) {
                 userModel.find((uIdRes), (err, user) => {
-                    let userAvatar = user.avatar.toString('base64');
                     userModel.wardList((uIdRes), (err, result) => {
                         if (err)
                             return res.send(err.message);
@@ -106,7 +106,7 @@ userRouter.post('/getInfo', (req, res) => {
                             "email": user.email,
                             "nickname": user.nickname,
                             "password": user.password,
-                            "avatar": userAvatar,
+                            "avatar": user.avatar,
                             "gender": user.gender,
                             "oauthToken": user.OauthToken,
                             "wardList": result
