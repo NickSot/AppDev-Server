@@ -12,7 +12,7 @@ Create Table Users (
     Email Varchar(50) Unique NOT NULL,
     NickName Varchar(50) Unique NOT NULL,
     Pass Varchar(1024) NOT NULL,
-    Avatar Varchar(200),
+    Avatar Blob,
     Gender Varchar(50),
     OauthToken Varchar(100)
 );
@@ -33,7 +33,7 @@ Create Table Clothes (
 	cId Integer Primary Key auto_increment NOT NULL,
     ClothType Enum ('Shirt', 'Pants', 'Skirt',
 		'Dress', 'Shoe', 'Jacket') NOT NULL,
-	Image Varchar(200) NOT NULL,
+	Image LongText,
     OriginalWardrobeId Integer NOT NULL,
     foreign key (OriginalWardrobeId) References Wardrobes(wId) On Delete Cascade
 );

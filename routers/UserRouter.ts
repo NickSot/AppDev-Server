@@ -56,8 +56,6 @@ userRouter.post('/login', (req: Request, res: Response) => {
                 userModel.wardList((uId), (err: Error, result: Array<object>) => {
     
                     if(err) return res.send(err.message);
-
-                    console.log(result);
             
                     res.status(200).send({
                         "uId": user.id,
