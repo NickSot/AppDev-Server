@@ -12,7 +12,7 @@ Create Table Users (
     Email Varchar(50) Unique NOT NULL,
     NickName Varchar(50) Unique NOT NULL,
     Pass Varchar(1024) NOT NULL,
-    Avatar Blob,
+    Avatar LongText,
     Gender Varchar(50),
     OauthToken Varchar(100)
 );
