@@ -10,7 +10,12 @@ const userRouter = express.Router();
 userRouter.post('/register', (req: Request, res: Response) => {
     let newUser: User = req.body;
 
-    emailCheck(newUser.email)
+    authModel.verifyUsername((newUser.email),(newUser.nickname),(err: Error, unique: Boolean) => {
+        if(err) return res.send(err.message);
+
+        if(unique){
+
+            emailCheck(newUser.email)
             .then(function (result) {
                 if (result) {
                     userModel.create(newUser, (err: Error, insertId: number) => {
@@ -35,6 +40,11 @@ userRouter.post('/register', (req: Request, res: Response) => {
                     res.status(500).send('anime waifu')
                 }
             });
+        }
+        else{
+            res.status(409).send('email or user name already taken');
+        }
+    });
 });
 
 
@@ -200,7 +210,7 @@ userRouter.post('/register/addWardrobe', (req:Request, res:Response) => {
                                 });
                             }
                             else{
-                                res.status(409).send('This wardrobe cannot be accessed!');
+                                res.status(409).send('Invalid request!');
                             }
                         });
                     }
