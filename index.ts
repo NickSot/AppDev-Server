@@ -6,8 +6,8 @@ import {clothRouter} from './routers/ClothRouter';
 
 const app = express();
 
-app.use(bodyParser.urlencoded({extended: true}));
-app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({limit: "5mb", extended: true}));
+app.use(bodyParser.json({limit: "5mb"}));
 app.use('/users', userRouter);
 app.use('/wardrobes', wardrobeRouter);
 app.use('/clothes', clothRouter);

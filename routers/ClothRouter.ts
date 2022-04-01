@@ -3,6 +3,7 @@ import {Cloth} from '../models/Cloth';
 import express, {request, Request, Response} from 'express';
 import * as authModel from '../models/Auth'
 import fs from 'fs';
+import { setOriginalNode } from 'typescript';
 
 const clothRouter = express.Router();
 
@@ -16,6 +17,8 @@ clothRouter.post('/register', (req: Request, res: Response) => {
             if(uIdRes != null){
     
                 let newCloth: Cloth = req.body;
+                var image = newCloth.image;
+                newCloth.image = "image";
     
                 authModel.verifyWardrobe((uIdRes), (newCloth.originalWardrobeId), (err: Error, wValid: boolean) => {
     
@@ -27,10 +30,27 @@ clothRouter.post('/register', (req: Request, res: Response) => {
                                     message: err.message
                                 });
                             }
-                    
-                            res.status(201).json({
-                                message: 'Cloth created!',
-                                cId: insertId
+
+                            var path = "pictures/" + insertId +".png";
+
+                            //var base64Data = req.body.image.replace(/^data:image\/png;base64,/, "");
+
+                            var base64Data = Buffer.from(image, 'base64');
+
+                            fs.writeFile(path, base64Data, function(err) {
+                                if(err) return res.send(err.message);
+
+                                newCloth.image = path;
+
+                                clothModel.update((insertId), (newCloth), (err: Error, affectedRows: number) => {
+                                    if (err) return res.send(err.message);
+                            
+                                    if(affectedRows > 0){
+                                        res.status(201).json({
+                                            message: 'Cloth created!'
+                                        });
+                                    }
+                                });
                             });
                         });
                     }
@@ -70,10 +90,16 @@ clothRouter.delete('/:id', (req:Request, res:Response) => {
     
                                 clothModel.remove(+(req.params.id), (err: Error, affectedRows: number) => {
                                     if (err) res.send(err.message);
-                            
-                                    if (affectedRows > 0) {
-                                        res.status(200).send('Success!');
-                                    }
+
+                                    var path = "pictures/" + req.params.id + ".png";
+
+                                    fs.unlink(path, (err) => {
+                                        if(err) return res.send(err.message);
+
+                                        if (affectedRows > 0) {
+                                            res.status(200).send('Success!');
+                                        }
+                                      })
                                 });
                             }
                             else{
@@ -116,10 +142,14 @@ clothRouter.post('/:id', (req: Request, res: Response) => {
                             if(cValid){
     
                                 clothModel.find(+(req.params.id), (err: Error, cloth: Cloth) => {
+
+                                    var path = "pictures/" + req.params.id + ".png";
+
+                                    var imageAsBase64 = fs.readFileSync(path, 'base64');
     
                                     res.status(200).send({
                                         'clothType': cloth.clothType,
-                                        'image': cloth.image,
+                                        'image': imageAsBase64,
                                         'originalWardrobeId': cloth.originalWardrobeId
                                     });
                                 });
@@ -154,6 +184,8 @@ clothRouter.put('/register/:id', (req:Request, res:Response) => {
             if(uIdRes != null){
     
                 let updatedCloth: Cloth = req.body;
+                var image = updatedCloth.image;
+                updatedCloth.image = "image";
     
                 authModel.verifyWardrobe((uIdRes), (req.body.ogWarId), (err: Error, wValid: boolean) => {
                     if(err) return res.send(err.message);
@@ -164,13 +196,23 @@ clothRouter.put('/register/:id', (req:Request, res:Response) => {
                             if(err) return res.send(err.message);
     
                             if(cValid){
-    
-                                clothModel.update(+(req.params.id), (updatedCloth), (err: Error, affectedRows: number) => {
-                                    if (err) return res.send(err.message);
-                            
-                                    if(affectedRows > 0){
-                                        res.status(200).send('Success!');
-                                    }
+
+                                var path = "pictures/" + req.params.id + ".png";
+
+                                var base64Data = Buffer.from(image, 'base64');
+
+                                fs.writeFile(path, base64Data, function(err) {
+                                    if(err) return res.send(err.message);
+
+                                    updatedCloth.image = path;
+                                    
+                                    clothModel.update(+(req.params.id), (updatedCloth), (err: Error, affectedRows: number) => {
+                                        if (err) return res.send(err.message);
+                                
+                                        if(affectedRows > 0){
+                                            res.status(200).send('Success!');
+                                        }
+                                    });
                                 });
                             }
                             else{

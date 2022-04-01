@@ -106,7 +106,6 @@ wardrobeRouter.post('/:id', (req: Request, res: Response) => {
                         wardrobeModel.find(+(req.params.id), (err: Error, wardrobe: Wardrobe) => {
     
                             wardrobeModel.clothList(+(req.params.id), (err: Error, result: Array<object>) =>{
-                                
                                 if(err) {return res.send(err.message);}
 
                                 wardrobeModel.userList(+(req.params.id),(err: Error, userRes: Array<object>) =>{

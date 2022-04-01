@@ -30,6 +30,7 @@ exports.clothRouter = void 0;
 const clothModel = __importStar(require("../models/Cloth"));
 const express_1 = __importDefault(require("express"));
 const authModel = __importStar(require("../models/Auth"));
+const fs_1 = __importDefault(require("fs"));
 const clothRouter = express_1.default.Router();
 exports.clothRouter = clothRouter;
 clothRouter.post('/register', (req, res) => {
@@ -39,6 +40,8 @@ clothRouter.post('/register', (req, res) => {
                 return res.send(err.message);
             if (uIdRes != null) {
                 let newCloth = req.body;
+                var image = newCloth.image;
+                newCloth.image = "image";
                 authModel.verifyWardrobe((uIdRes), (newCloth.originalWardrobeId), (err, wValid) => {
                     if (wValid) {
                         clothModel.create(newCloth, (err, insertId) => {
@@ -47,9 +50,22 @@ clothRouter.post('/register', (req, res) => {
                                     message: err.message
                                 });
                             }
-                            res.status(201).json({
-                                message: 'Cloth created!',
-                                cId: insertId
+                            var path = "pictures/" + insertId + ".png";
+                            //var base64Data = req.body.image.replace(/^data:image\/png;base64,/, "");
+                            var base64Data = Buffer.from(image, 'base64');
+                            fs_1.default.writeFile(path, base64Data, function (err) {
+                                if (err)
+                                    return res.send(err.message);
+                                newCloth.image = path;
+                                clothModel.update((insertId), (newCloth), (err, affectedRows) => {
+                                    if (err)
+                                        return res.send(err.message);
+                                    if (affectedRows > 0) {
+                                        res.status(201).json({
+                                            message: 'Cloth created!'
+                                        });
+                                    }
+                                });
                             });
                         });
                     }
@@ -84,9 +100,14 @@ clothRouter.delete('/:id', (req, res) => {
                                 clothModel.remove(+(req.params.id), (err, affectedRows) => {
                                     if (err)
                                         res.send(err.message);
-                                    if (affectedRows > 0) {
-                                        res.status(200).send('Success!');
-                                    }
+                                    var path = "pictures/" + req.params.id + ".png";
+                                    fs_1.default.unlink(path, (err) => {
+                                        if (err)
+                                            return res.send(err.message);
+                                        if (affectedRows > 0) {
+                                            res.status(200).send('Success!');
+                                        }
+                                    });
                                 });
                             }
                             else {
@@ -123,9 +144,11 @@ clothRouter.post('/:id', (req, res) => {
                                 return res.send(err.message);
                             if (cValid) {
                                 clothModel.find(+(req.params.id), (err, cloth) => {
+                                    var path = "pictures/" + req.params.id + ".png";
+                                    var imageAsBase64 = fs_1.default.readFileSync(path, 'base64');
                                     res.status(200).send({
                                         'clothType': cloth.clothType,
-                                        'image': cloth.image,
+                                        'image': imageAsBase64,
                                         'originalWardrobeId': cloth.originalWardrobeId
                                     });
                                 });
@@ -156,6 +179,8 @@ clothRouter.put('/register/:id', (req, res) => {
                 return res.send(err.message);
             if (uIdRes != null) {
                 let updatedCloth = req.body;
+                var image = updatedCloth.image;
+                updatedCloth.image = "image";
                 authModel.verifyWardrobe((uIdRes), (req.body.ogWarId), (err, wValid) => {
                     if (err)
                         return res.send(err.message);
@@ -164,12 +189,19 @@ clothRouter.put('/register/:id', (req, res) => {
                             if (err)
                                 return res.send(err.message);
                             if (cValid) {
-                                clothModel.update(+(req.params.id), (updatedCloth), (err, affectedRows) => {
+                                var path = "pictures/" + req.params.id + ".png";
+                                var base64Data = Buffer.from(image, 'base64');
+                                fs_1.default.writeFile(path, base64Data, function (err) {
                                     if (err)
                                         return res.send(err.message);
-                                    if (affectedRows > 0) {
-                                        res.status(200).send('Success!');
-                                    }
+                                    updatedCloth.image = path;
+                                    clothModel.update(+(req.params.id), (updatedCloth), (err, affectedRows) => {
+                                        if (err)
+                                            return res.send(err.message);
+                                        if (affectedRows > 0) {
+                                            res.status(200).send('Success!');
+                                        }
+                                    });
                                 });
                             }
                             else {

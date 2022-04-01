@@ -1,7 +1,11 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.userList = exports.clothList = exports.update = exports.find = exports.remove = exports.create = void 0;
 const db_1 = require("../db");
+const fs_1 = __importDefault(require("fs"));
 const create = (wardrobe, callback) => {
     let queryString = `Insert Into Wardrobes (NickName, CreationTime, WardrobeType, AdminId) Values (
         ?, ?, ?, ?)`;
@@ -69,7 +73,17 @@ exports.clothList = ((wardrobeId, callback) => {
         if (err) {
             return callback(err);
         }
-        callback(null, result);
+        var clothList = new Array(result.length);
+        for (let i = 0; i < result.length; i++) {
+            var imageAsBase64 = fs_1.default.readFileSync(result[i].Image, 'base64');
+            let cloth = {
+                'clothType': result[i].ClothType,
+                'image': imageAsBase64,
+                'originalWardrobeId': result[i].OriginalWardrobeId
+            };
+            clothList[i] = cloth;
+        }
+        callback(null, clothList);
     });
 });
 exports.userList = ((wardrobeId, callback) => {

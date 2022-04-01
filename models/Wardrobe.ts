@@ -1,4 +1,5 @@
 import { sqlClient } from '../db';
+import fs from 'fs';
 import { OkPacket, RowDataPacket } from "mysql2";
 
 export interface Wardrobe {
@@ -83,7 +84,21 @@ export const clothList = ((wardrobeId: number, callback: Function) => {
     sqlClient.query(queryString, [wardrobeId], (err, result) => {
         if(err) {return callback(err)}
 
-        callback(null, <RowDataPacket> result)
+        var clothList = new Array((<RowDataPacket> result).length);
+
+        for(let i = 0; i < (<RowDataPacket> result).length; i++){
+            var imageAsBase64 = fs.readFileSync((<RowDataPacket> result)[i].Image, 'base64');
+
+            let cloth = {
+                'clothType': (<RowDataPacket> result)[i].ClothType,
+                'image': imageAsBase64,
+                'originalWardrobeId': (<RowDataPacket> result)[i].OriginalWardrobeId
+            }
+
+            clothList[i] = cloth;
+        }
+
+        callback(null, clothList)
     })
 });
 
