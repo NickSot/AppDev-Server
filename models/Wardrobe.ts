@@ -90,6 +90,7 @@ export const clothList = ((wardrobeId: number, callback: Function) => {
             var imageAsBase64 = fs.readFileSync((<RowDataPacket> result)[i].Image, 'base64');
 
             let cloth = {
+                'cId': (<RowDataPacket> result)[i].cId,
                 'clothType': (<RowDataPacket> result)[i].ClothType,
                 'image': imageAsBase64,
                 'originalWardrobeId': (<RowDataPacket> result)[i].OriginalWardrobeId

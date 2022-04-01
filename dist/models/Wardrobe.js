@@ -77,6 +77,7 @@ exports.clothList = ((wardrobeId, callback) => {
         for (let i = 0; i < result.length; i++) {
             var imageAsBase64 = fs_1.default.readFileSync(result[i].Image, 'base64');
             let cloth = {
+                'cId': result[i].cId,
                 'clothType': result[i].ClothType,
                 'image': imageAsBase64,
                 'originalWardrobeId': result[i].OriginalWardrobeId
