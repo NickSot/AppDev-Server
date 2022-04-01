@@ -68,7 +68,8 @@ const update = (wardrobeId, updateValues, callback) => {
 };
 exports.update = update;
 exports.clothList = ((wardrobeId, callback) => {
-    let queryString = 'Select c.cId, c.ClothType, c.Image, c.OriginalWardrobeId From Wardrobes w Inner Join WardrobesClothes wc On w.wId = wc.wId Inner Join Clothes c On c.cId = wc.cId Where w.wId = ?';
+    let queryString = 'Select c.cId, c.ClothType, c.Image, c.OriginalWardrobeId, c.OriginalUser From Wardrobes w Inner Join WardrobesClothes wc On w.wId = wc.wId Inner Join Clothes c On c.cId = wc.cId Where w.wId = ?';
+    let queryString2 = 'Select * From Users Where uId = ?';
     db_1.sqlClient.query(queryString, [wardrobeId], (err, result) => {
         if (err) {
             return callback(err);
@@ -76,13 +77,18 @@ exports.clothList = ((wardrobeId, callback) => {
         var clothList = new Array(result.length);
         for (let i = 0; i < result.length; i++) {
             var imageAsBase64 = fs_1.default.readFileSync(result[i].Image, 'base64');
-            let cloth = {
-                'cId': result[i].cId,
-                'clothType': result[i].ClothType,
-                'image': imageAsBase64,
-                'originalWardrobeId': result[i].OriginalWardrobeId
-            };
-            clothList[i] = cloth;
+            db_1.sqlClient.query(queryString2, [result[i].OriginalUser], (err, userRes) => {
+                if (err)
+                    return callback(err);
+                let cloth = {
+                    'cId': result[i].cId,
+                    'clothType': result[i].ClothType,
+                    'image': imageAsBase64,
+                    'originalWardrobeId': result[i].OriginalWardrobeId,
+                    'originalUserName': userRes[i].NickName
+                };
+                clothList[i] = cloth;
+            });
         }
         callback(null, clothList);
     });

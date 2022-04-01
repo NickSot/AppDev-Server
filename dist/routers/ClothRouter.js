@@ -42,6 +42,7 @@ clothRouter.post('/register', (req, res) => {
                 let newCloth = req.body;
                 var image = newCloth.image;
                 newCloth.image = "image";
+                newCloth.originalUserId = uIdRes;
                 authModel.verifyWardrobe((uIdRes), (newCloth.originalWardrobeId), (err, wValid) => {
                     if (wValid) {
                         clothModel.create(newCloth, (err, insertId) => {
@@ -93,7 +94,7 @@ clothRouter.delete('/:id', (req, res) => {
                     if (err)
                         return res.send(err.message);
                     if (wValid) {
-                        authModel.verifyClothOrigin((req.body.ogWarId), +(req.params.id), (err, cValid) => {
+                        authModel.verifyClothOrigin((uIdRes), +(req.params.id), (err, cValid) => {
                             if (err)
                                 return res.send(err.message);
                             if (cValid) {
@@ -149,7 +150,8 @@ clothRouter.post('/:id', (req, res) => {
                                     res.status(200).send({
                                         'clothType': cloth.clothType,
                                         'image': imageAsBase64,
-                                        'originalWardrobeId': cloth.originalWardrobeId
+                                        'originalWardrobeId': cloth.originalWardrobeId,
+                                        'originalUser': cloth.originalUserName
                                     });
                                 });
                             }
@@ -185,7 +187,7 @@ clothRouter.put('/register/:id', (req, res) => {
                     if (err)
                         return res.send(err.message);
                     if (wValid) {
-                        authModel.verifyClothOrigin((req.body.ogWarId), +(req.params.id), (err, cValid) => {
+                        authModel.verifyClothOrigin((uIdRes), +(req.params.id), (err, cValid) => {
                             if (err)
                                 return res.send(err.message);
                             if (cValid) {
@@ -233,7 +235,7 @@ clothRouter.post('/register/:id', (req, res) => {
                     if (err)
                         return res.send(err.message);
                     if (wValid) {
-                        authModel.verifyClothOrigin((req.body.ogWarId), +(req.params.id), (err, cOgValid) => {
+                        authModel.verifyClothOrigin((uIdRes), +(req.params.id), (err, cOgValid) => {
                             if (err)
                                 return res.send(err.message);
                             if (cOgValid) {
@@ -283,7 +285,7 @@ clothRouter.delete('/register/:id', (req, res) => {
                     if (err)
                         return res.send(err.message);
                     if (wValid) {
-                        authModel.verifyClothOrigin((req.body.ogWarId), +(req.params.id), (err, cOgValid) => {
+                        authModel.verifyClothOrigin((uIdRes), +(req.params.id), (err, cOgValid) => {
                             if (err)
                                 return res.send(err.message);
                             if (cOgValid) {

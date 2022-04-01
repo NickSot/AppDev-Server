@@ -67,10 +67,10 @@ export const verifyWardrobeShared = ((wId: number, callback: Function) => {
     });
 });
 
-export const verifyClothOrigin = ((wId: number, cId:number, callback: Function) => {
-    let queryString: string = 'Select * From Clothes Where OriginalWardrobeId = ? And cId = ?'
+export const verifyClothOrigin = ((uId: number, cId:number, callback: Function) => {
+    let queryString: string = 'Select * From Clothes Where OriginalUser = ? And cId = ?'
 
-    sqlClient.query(queryString, [wId, cId], (err, result) => {
+    sqlClient.query(queryString, [uId, cId], (err, result) => {
         if (err) {return callback(err) };
 
         if((<RowDataPacket>result).length > 0){

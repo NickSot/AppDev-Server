@@ -35,6 +35,7 @@ Create Table Clothes (
 		'Dress', 'Shoe', 'Jacket') NOT NULL,
 	Image LongText,
     OriginalWardrobeId Integer NOT NULL,
+    OriginalUser Integer NOT NULL,
     foreign key (OriginalWardrobeId) References Wardrobes(wId) On Delete Cascade
 );
 

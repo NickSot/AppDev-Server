@@ -6,15 +6,17 @@ export interface Cloth {
     clothType: string;
     image: string;
     originalWardrobeId: number;
+    originalUserId?: number;
+    originalUserName?: string;
 }
 
 export const create = (cloth: Cloth, callback: Function) => {
-    let queryString: string = `Insert Into Clothes (ClothType, Image, OriginalWardrobeId) Values (
-        ?, ?, ?    )`;
+    let queryString: string = `Insert Into Clothes (ClothType, Image, OriginalWardrobeId, OriginalUser) Values (
+        ?, ?, ?,?    )`;
 
         let queryString2: string = 'Insert Into WardrobesClothes (wId, cId) Values (?,?    )';
 
-    sqlClient.query(queryString, [cloth.clothType, cloth.image, cloth.originalWardrobeId]
+    sqlClient.query(queryString, [cloth.clothType, cloth.image, cloth.originalWardrobeId, cloth.originalUserId]
         , (err, result) => {
             if (err) { callback(err) };
 
@@ -43,19 +45,27 @@ export const remove = (clothId: number, callback: Function) => {
 
 export const find = (clothId: number, callback: Function) => {
     let queryString = `Select * From Clothes Where cId = ?`;
+    let queryString2 = 'Select * From Users Where uId = ?';
 
     sqlClient.query(queryString, [clothId], (err, result) => {
         if (err) {callback(err)};
 
         const row = (<RowDataPacket> result)[0];
 
-        const cloth: Cloth  = {
-            clothType: row.ClothType,
-            image: row.Image,
-            originalWardrobeId: row.OriginalWardrobeId
-        };
+        sqlClient.query(queryString2,[row.OriginalUser], (err, userRes) => {
+            if(err) return callback(err);
 
-        callback(null, cloth);
+            const row2 = (<RowDataPacket> userRes)[0];
+
+            const cloth: Cloth  = {
+                clothType: row.ClothType,
+                image: row.Image,
+                originalWardrobeId: row.OriginalWardrobeId,
+                originalUserName: row2.NickName
+            };
+    
+            callback(null, cloth);
+        });
     });
 }
 

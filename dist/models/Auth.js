@@ -63,9 +63,9 @@ exports.verifyWardrobeShared = ((wId, callback) => {
         }
     });
 });
-exports.verifyClothOrigin = ((wId, cId, callback) => {
-    let queryString = 'Select * From Clothes Where OriginalWardrobeId = ? And cId = ?';
-    db_1.sqlClient.query(queryString, [wId, cId], (err, result) => {
+exports.verifyClothOrigin = ((uId, cId, callback) => {
+    let queryString = 'Select * From Clothes Where OriginalUser = ? And cId = ?';
+    db_1.sqlClient.query(queryString, [uId, cId], (err, result) => {
         if (err) {
             return callback(err);
         }

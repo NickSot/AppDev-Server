@@ -79,7 +79,8 @@ export const update = (wardrobeId: number, updateValues: Wardrobe, callback: Fun
 }
 
 export const clothList = ((wardrobeId: number, callback: Function) => {
-    let queryString = 'Select c.cId, c.ClothType, c.Image, c.OriginalWardrobeId From Wardrobes w Inner Join WardrobesClothes wc On w.wId = wc.wId Inner Join Clothes c On c.cId = wc.cId Where w.wId = ?'
+    let queryString = 'Select c.cId, c.ClothType, c.Image, c.OriginalWardrobeId, c.OriginalUser From Wardrobes w Inner Join WardrobesClothes wc On w.wId = wc.wId Inner Join Clothes c On c.cId = wc.cId Where w.wId = ?'
+    let queryString2 = 'Select * From Users Where uId = ?';
 
     sqlClient.query(queryString, [wardrobeId], (err, result) => {
         if(err) {return callback(err)}
@@ -89,14 +90,19 @@ export const clothList = ((wardrobeId: number, callback: Function) => {
         for(let i = 0; i < (<RowDataPacket> result).length; i++){
             var imageAsBase64 = fs.readFileSync((<RowDataPacket> result)[i].Image, 'base64');
 
-            let cloth = {
-                'cId': (<RowDataPacket> result)[i].cId,
-                'clothType': (<RowDataPacket> result)[i].ClothType,
-                'image': imageAsBase64,
-                'originalWardrobeId': (<RowDataPacket> result)[i].OriginalWardrobeId
-            }
+            sqlClient.query(queryString2, [(<RowDataPacket> result)[i].OriginalUser], (err, userRes) => {
+                if(err) return callback(err);
 
-            clothList[i] = cloth;
+                let cloth = {
+                    'cId': (<RowDataPacket> result)[i].cId,
+                    'clothType': (<RowDataPacket> result)[i].ClothType,
+                    'image': imageAsBase64,
+                    'originalWardrobeId': (<RowDataPacket> result)[i].OriginalWardrobeId,
+                    'originalUserName': (<RowDataPacket> userRes)[i].NickName
+                }
+    
+                clothList[i] = cloth;
+            });
         }
 
         callback(null, clothList)
