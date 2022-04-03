@@ -243,10 +243,19 @@ userRouter.delete('/register/delWardrobe', (req:Request, res:Response) => {
     
                     if(valid){
 
-                        userModel.userDelFromWardrobe((uIdRes), (req.body.wId), (err:Error, affectedRows: number) => {
+                        authModel.verifyWardrobeShared(req.body.wId, (err: Error, isShared: Boolean) => {
                             if (err) return res.send(err.message);
-                    
-                                res.status(200).send('Success!');
+
+                            if (!isShared) return res.status(403).send("Cannot leave personal wardrobe!");
+
+                            userModel.userDelFromWardrobe((uIdRes), (req.body.wId), (err:Error, affectedRows: number) => {
+                                if (err) return res.send(err.message);
+                                
+                                if (affectedRows > 0)
+                                    res.status(200).send('Success!');
+                                else
+                                    res.status(500).send('Could not leave the wardrobe');
+                            });
                         });
                     }
                     else{
