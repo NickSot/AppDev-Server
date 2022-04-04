@@ -85,7 +85,7 @@ exports.clothList = ((wardrobeId, callback) => {
                     'clothType': result[i].ClothType,
                     'image': imageAsBase64,
                     'originalWardrobeId': result[i].OriginalWardrobeId,
-                    'originalUserName': userRes[i].NickName
+                    'originalUserName': userRes[0].NickName
                 };
                 clothList[i] = cloth;
             });

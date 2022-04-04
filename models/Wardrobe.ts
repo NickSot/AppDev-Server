@@ -98,7 +98,7 @@ export const clothList = ((wardrobeId: number, callback: Function) => {
                     'clothType': (<RowDataPacket> result)[i].ClothType,
                     'image': imageAsBase64,
                     'originalWardrobeId': (<RowDataPacket> result)[i].OriginalWardrobeId,
-                    'originalUserName': (<RowDataPacket> userRes)[i].NickName
+                    'originalUserName': (<RowDataPacket> userRes)[0].NickName
                 }
     
                 clothList[i] = cloth;
